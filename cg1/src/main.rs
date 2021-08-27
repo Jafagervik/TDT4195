@@ -12,6 +12,11 @@ use glutin::event_loop::ControlFlow;
 const SCREEN_W: u32 = 800;
 const SCREEN_H: u32 = 600;
 
+// This will be a triangle with bottom side length being 5, starting from origo
+const coordinates: Vec<f32> = vec!{-0.6, -0.6, 0.0, 0.6, -0.6, 0.0, 0.0, 0.6, 0.0};
+// Just draw from 1st to 3rd coordinate
+const indices: Vec<u32> = vec!{0, 1, 2};
+
 // == // Helper functions to make interacting with OpenGL a little bit prettier. You *WILL* need these! // == //
 // The names should be pretty self explanatory
 fn byte_size_of_array<T>(val: &[T]) -> isize {
@@ -36,7 +41,8 @@ fn offset<T>(n: u32) -> *const c_void {
 // Get a null pointer (equivalent to an offset of 0)
 // ptr::null()
 // let p = 0 as *const c_void
-
+// Shader - small program that runs on gpu
+// for vertex shader : vertices
 
 
 // == // Modify and complete the function below for the first task
@@ -46,37 +52,42 @@ unsafe fn init_vao(coordinates: &Vec<f32>, indices: &Vec<u32>) -> u32 {
      */
 
     // VAO 
-    let array: u32 = 0; // Create
-    let vao = gl::GenVertexArray(0, &array); // Generate
-    gl::BindVertexArray(&array); // Bind
+    let mut array: u32 = 0; // Create
+    let array_ptr = &mut array as *mut u32;
+    // let mut array_ptr: *mut u32 = &array;
+    gl::GenVertexArrays(0, array_pt); // Generate
+    gl::BindVertexArray(array); // Bind
 
     // VBO - buffer
-    let buffer: u32 = 0;
-    gl::GenBuffers(0, &buffer);
-    gl::BindBufferArray(GL_ARRAY_BUFFER, &buffer);
+    let mut buffer: u32 = 0;
+    let buffer_ptr = &mut buffer as *mut u32;
+    // let mut buffer_ptr: *mut u32 = &buffer;
+    gl::GenBuffers(0, buffer_ptr);
+    gl::BindBuffer(gl::ARRAY_BUFFER, buffer);
 
-    let len_coordinates = coordinates.len()
-    gl::BufferData(GL_ARRAY_BUFFER, len_coordinates * size_of(f32), pointer_to_array<f32>(coordinates), GL_STATIC_DRAW);
+    let len_coordinates = coordinates.len();
+    gl::BufferData(gl::ARRAY_BUFFER, (len_coordinates * mem::size_of(coordinates)).try_into().unwrap(), pointer_to_array(&coordinates), gl::STATIC_DRAW);
     
     // TODO: Change stride if we use both xyz and colors in same array, and pointer accordingly
     // Vaa = Vertex attrib array
-    let index = 1;
+    let index = 1; // Important for shader!
     let size = 3;
     let stride = 0; // we only store coordinates and nothing else.
-    let pointer = 0;
-    let vaa = gl::VertexAttribPointer(index, size, GL_FLOAT, GL_FALSE, stride, pointer);
-    gl::EnableVertexAttribArray(vaa);
+    let pointer = 0 as *const c_void;
+    gl::VertexAttribPointer(index, size, gl::FLOAT, gl::FALSE, stride, pointer);
+    gl::EnableVertexAttribArray(index);
 
     // Indices = connect the dots, multiple usecases for same vertices.
-    let index_buffer: u32 = 0;
-    gl::GenBuffers(0, &index_buffer);
-    gl::BindBufferArray(GL_ELEMENT_ARRAY_BUFFER, &index_buffer);
+    let mut index_buffer: u32 = 0;
+    let index_buffer_ptr = &mut index_buffer as *mut u32;
+    gl::GenBuffers(0, index_buffer_ptr);
+    gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, index_buffer);
 
     let len_indices = indices.len();
-    gl::BufferData(GL_ELEMENT_ARRAY_BUFFER, len_indices * size_of(u32), pointer_to_array<u32>(indices), GL_STATIC_DRAW);
+    gl::BufferData(gl::ELEMENT_ARRAY_BUFFER, (len_indices * mem::size_of(indices)).try_into().unwrap(), pointer_to_array(&indices), gl::STATIC_DRAW);
 
     // TODO: Find out if vao is what we actually want to return
-    vao
+    array
  } 
 
 fn main() {
@@ -132,7 +143,12 @@ fn main() {
 
         // == // Set up your VAO here
         unsafe {
-
+            let cp_coordinates = &coordinates;
+            let cp_indices = &indices
+            let vao = init_vao(&cp_coordinates, &cp_indices);
+            gl::BindVertexArray(vao); // Bind
+            let num_of_elements = 3;
+            gl::DrawElements(gl::LINE_STRIP, num_of_elements * 3, gl::UNSIGNED_SHORT, 0 as const c_void);
         }
 
         // Basic usage of shader helper:
@@ -144,11 +160,18 @@ fn main() {
         //        .attach_file("./path/to/shader.file")
         //        .link();
         unsafe {
+            let shader = shader::ShaderBuilder::new();
+            shader.attach_file("../shaders/simple.vert");
+            shader.attach_file("../shaders/simple.frag");
+            shader.link();
 
+            // !!OLD!!
+            // let vertex_shader = shader::ShaderBuilder::new().attach_file("../shaders/simple.vert").link();
+            // let fragement_shader = shader::ShaderBuilder::new().attach_file("../shaders/simple.frag").link();
         }
 
         // Used to demonstrate keyboard handling -- feel free to remove
-        let mut _arbitrary_number = 0.0;
+        let mut _arbitrary_number = 0.0;    
 
         let first_frame_time = std::time::Instant::now();
         let mut last_frame_time = first_frame_time;

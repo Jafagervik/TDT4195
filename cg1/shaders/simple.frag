@@ -1,4 +1,4 @@
-#version 430 core
+#version 450 core
 
 // In: any additional inputs from vertex shader
 // Out: vec4 with color

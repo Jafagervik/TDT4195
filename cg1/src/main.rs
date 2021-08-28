@@ -1,20 +1,22 @@
 extern crate nalgebra_glm as glm;
-use std::{ mem, ptr, os::raw::c_void };
+use std::sync::{Arc, Mutex, RwLock};
 use std::thread;
-use std::sync::{Mutex, Arc, RwLock};
-
-use std::convert::TryInto; // This is for casting usize into isize
+use std::{mem, os::raw::c_void, ptr};
 
 mod shader;
 mod util;
 
-use glutin::event::{Event, WindowEvent, DeviceEvent, KeyboardInput, ElementState::{Pressed, Released}, VirtualKeyCode::{self, *}};
+use glutin::event::{
+    DeviceEvent,
+    ElementState::{Pressed, Released},
+    Event, KeyboardInput,
+    VirtualKeyCode::{self, *},
+    WindowEvent,
+};
 use glutin::event_loop::ControlFlow;
 
 const SCREEN_W: u32 = 800;
 const SCREEN_H: u32 = 600;
-
-
 
 // == // Helper functions to make interacting with OpenGL a little bit prettier. You *WILL* need these! // == //
 // The names should be pretty self explanatory
@@ -43,15 +45,14 @@ fn offset<T>(n: u32) -> *const c_void {
 // Shader - small program that runs on gpu
 // for vertex shader : vertices
 
-
 // == // Modify and complete the function below for the first task
 unsafe fn init_vao(vertices: &Vec<f32>, indices: &Vec<u32>) -> u32 {
     // Returns the ID of the newly instantiated vertex array object upon its creation
 
-    // VAO 
+    // VAO
     let mut vao: u32 = 0; // Create
-    // let array_ptr = &mut array as *mut u32;
-    // let mut array_ptr: *mut u32 = &array;
+                          // let array_ptr = &mut array as *mut u32;
+                          // let mut array_ptr: *mut u32 = &array;
     gl::GenVertexArrays(0, &mut vao); // Generate
     gl::BindVertexArray(vao); // Bind
 
@@ -61,18 +62,19 @@ unsafe fn init_vao(vertices: &Vec<f32>, indices: &Vec<u32>) -> u32 {
     // let mut buffer_ptr: *mut u32 = &buffer;
     gl::GenBuffers(0, &mut vbo);
     gl::BindBuffer(gl::ARRAY_BUFFER, vbo);
-    gl::BufferData(gl::ARRAY_BUFFER, mem::size_of_val(&vertices).try_into().unwrap(), pointer_to_array(&vertices), gl::STATIC_DRAW);
-    
+    gl::BufferData(
+        gl::ARRAY_BUFFER,
+        byte_size_of_array(&vertices),
+        pointer_to_array(&vertices),
+        gl::STATIC_DRAW,
+    );
     // TODO: Change stride if we use both xyz and colors in same array, and pointer accordingly
     // Vaa = Vertex attrib array
     let index = 1; // Important for shader!
     let size = 3;
     let stride = 0; // we only store coordinates and nothing else.
     let pointer = 0 as *const c_void;
-    /*
-    glVertexAttribPointer(0, 3, gl::FLOAT, gl:FALSE, mem::size_of::<f32>().try_into().unwrap(), 0 as *const _,);
-    glEnableVertexAttribArray(0);
-    */
+
     gl::VertexAttribPointer(index, size, gl::FLOAT, gl::FALSE, stride, pointer);
     gl::EnableVertexAttribArray(index);
 
@@ -80,27 +82,28 @@ unsafe fn init_vao(vertices: &Vec<f32>, indices: &Vec<u32>) -> u32 {
     let mut index_buffer: u32 = 0;
     gl::GenBuffers(0, &mut index_buffer);
     gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, index_buffer);
-    gl::BufferData(gl::ELEMENT_ARRAY_BUFFER, mem::size_of_val(&indices).try_into().unwrap(), pointer_to_array(&indices), gl::STATIC_DRAW);
+    gl::BufferData(
+        gl::ELEMENT_ARRAY_BUFFER,
+        byte_size_of_array(&indices),
+        pointer_to_array(&indices),
+        gl::STATIC_DRAW,
+    );
 
-    
-
-    // TODO: Find out if vao is what we actually want to return
     vao
- } 
+}
 
 fn main() {
     // This will be a triangle with bottom side length being 5, starting from origo
-    let coordinates: Vec<f32> = vec!{-0.6, -0.6, 0.0, 0.6, -0.6, 0.0, 0.0, 0.6, 0.0};
+    let coordinates: Vec<f32> = vec![-0.6, -0.6, 0.0, 0.6, -0.6, 0.0, 0.0, 0.6, 0.0];
     // Just draw from 1st to 3rd coordinate
-    let indices: Vec<u32> = vec!{0, 1, 2};
+    let indices: Vec<u32> = vec![0, 1, 2];
     // Set up the necessary objects to deal with windows and event handling
     let el = glutin::event_loop::EventLoop::new();
     let wb = glutin::window::WindowBuilder::new()
         .with_title("Gloom-rs")
         .with_resizable(false)
         .with_inner_size(glutin::dpi::LogicalSize::new(SCREEN_W, SCREEN_H));
-    let cb = glutin::ContextBuilder::new()
-        .with_vsync(true);
+    let cb = glutin::ContextBuilder::new().with_vsync(true);
     let windowed_context = cb.build_windowed(wb, &el).unwrap();
     // Uncomment these if you want to use the mouse for controls, but want it to be confined to the screen and/or invisible.
     // windowed_context.window().set_cursor_grab(true).expect("failed to grab cursor");
@@ -138,9 +141,16 @@ fn main() {
             gl::DebugMessageCallback(Some(util::debug_callback), ptr::null());
 
             // Print some diagnostics
-            println!("{}: {}", util::get_gl_string(gl::VENDOR), util::get_gl_string(gl::RENDERER));
+            println!(
+                "{}: {}",
+                util::get_gl_string(gl::VENDOR),
+                util::get_gl_string(gl::RENDERER)
+            );
             println!("OpenGL\t: {}", util::get_gl_string(gl::VERSION));
-            println!("GLSL\t: {}", util::get_gl_string(gl::SHADING_LANGUAGE_VERSION));
+            println!(
+                "GLSL\t: {}",
+                util::get_gl_string(gl::SHADING_LANGUAGE_VERSION)
+            );
         }
 
         // == // Set up your VAO here
@@ -148,7 +158,13 @@ fn main() {
             let vao = init_vao(&coordinates, &indices);
             gl::BindVertexArray(vao); // Bind
             let num_of_elements = 3;
-            gl::DrawElements(gl::LINE_STRIP, num_of_elements * 3, gl::UNSIGNED_SHORT, 0 as *const c_void);
+            //gl::DrawArrays(gl::TRIANGLES, 0, 3);
+            gl::DrawElements(
+                gl::LINE_STRIP,
+                num_of_elements * 3,
+                gl::UNSIGNED_SHORT,
+                0 as *const c_void,
+            );
         }
 
         // Basic usage of shader helper:
@@ -161,11 +177,14 @@ fn main() {
         //        .link();
         unsafe {
             // Creates shader. using multiple attaches since they return self, and link them all together at the end
-            let s = shader::ShaderBuilder::new().attach_file("../shaders/simple.vert").attach_file("../shaders/simple.frag").link();
+            let mut _shdr = shader::ShaderBuilder::new()
+                .attach_file("../shaders/simple.vert")
+                .attach_file("../shaders/simple.frag")
+                .link();
         }
 
         // Used to demonstrate keyboard handling -- feel free to remove
-        let mut _arbitrary_number = 0.0;    
+        let mut _arbitrary_number = 0.0;
 
         let first_frame_time = std::time::Instant::now();
         let mut last_frame_time = first_frame_time;
@@ -182,21 +201,17 @@ fn main() {
                     match key {
                         VirtualKeyCode::A => {
                             _arbitrary_number += delta_time;
-                        },
+                        }
                         VirtualKeyCode::D => {
                             _arbitrary_number -= delta_time;
-                        },
+                        }
 
-
-                        _ => { }
+                        _ => {}
                     }
                 }
             }
             // Handle mouse movement. delta contains the x and y movement of the mouse since last frame in pixels
             if let Ok(mut delta) = mouse_delta.lock() {
-
-
-
                 *delta = (0.0, 0.0);
             }
 
@@ -205,11 +220,6 @@ fn main() {
                 gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
 
                 // Issue the necessary commands to draw your scene here
-
-
-
-
-
             }
 
             context.swap_buffers().unwrap();
@@ -240,13 +250,26 @@ fn main() {
         }
 
         match event {
-            Event::WindowEvent { event: WindowEvent::CloseRequested, .. } => {
+            Event::WindowEvent {
+                event: WindowEvent::CloseRequested,
+                ..
+            } => {
                 *control_flow = ControlFlow::Exit;
-            },
+            }
             // Keep track of currently pressed keys to send to the rendering thread
-            Event::WindowEvent { event: WindowEvent::KeyboardInput {
-                input: KeyboardInput { state: key_state, virtual_keycode: Some(keycode), .. }, .. }, .. } => {
-
+            Event::WindowEvent {
+                event:
+                    WindowEvent::KeyboardInput {
+                        input:
+                            KeyboardInput {
+                                state: key_state,
+                                virtual_keycode: Some(keycode),
+                                ..
+                            },
+                        ..
+                    },
+                ..
+            } => {
                 if let Ok(mut keys) = arc_pressed_keys.lock() {
                     match key_state {
                         Released => {
@@ -254,7 +277,7 @@ fn main() {
                                 let i = keys.iter().position(|&k| k == keycode).unwrap();
                                 keys.remove(i);
                             }
-                        },
+                        }
                         Pressed => {
                             if !keys.contains(&keycode) {
                                 keys.push(keycode);
@@ -267,20 +290,23 @@ fn main() {
                 match keycode {
                     Escape => {
                         *control_flow = ControlFlow::Exit;
-                    },
+                    }
                     Q => {
                         *control_flow = ControlFlow::Exit;
                     }
-                    _ => { }
+                    _ => {}
                 }
-            },
-            Event::DeviceEvent { event: DeviceEvent::MouseMotion { delta }, .. } => {
+            }
+            Event::DeviceEvent {
+                event: DeviceEvent::MouseMotion { delta },
+                ..
+            } => {
                 // Accumulate mouse movement
                 if let Ok(mut position) = arc_mouse_delta.lock() {
                     *position = (position.0 + delta.0 as f32, position.1 + delta.1 as f32);
                 }
-            },
-            _ => { }
+            }
+            _ => {}
         }
     });
 }

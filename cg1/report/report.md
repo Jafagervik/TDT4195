@@ -3,13 +3,13 @@
 # see https://pandoc.org/MANUAL.html#variables
 title: TDT4195 Assignment 1
 author:
-- Jørgen Aleksander Fagervik
+  - Jørgen Aleksander Fagervik
 date: \today # This is a latex command, ignored for HTML output
 lang: en-US
 papersize: a4
 geometry: margin=4cm
 toc: false
-toc-title: "List of Contents"
+toc-title: 'List of Contents'
 toc-depth: 2
 numbersections: true
 colorlinks: true
@@ -26,8 +26,35 @@ links-as-notes: true
 This is a paragraph.
 This is the same paragraph.
 
-This is a new paragraph, with *italic*, **bold**, and `inline code` formatting.
+This is a new paragraph, with _italic_, **bold**, and `inline code` formatting.
 It is possible to use special classes to format text: [this is a test]{.smallcaps}.
+
+1.  c)
+    This is an inline image with set height:
+    ![](images/1c.png){height=5em}
+
+2.  a)
+    ![](images/2a.png){height=5em}
+    i) The name of this phenomenon is
+    ii) It occurs when
+    iii) The purpose of this is to
+
+    b)
+    ![](images/2b.png){height=5em}
+    i) What happens is that
+    ii) It happens due to
+    iii) The effect occurs when ... The rule is that "".
+
+    c)
+    i) The reason that the depth buffer needs to be reset each frame is to
+    ii)
+    iii)
+    iv)
+    v)
+
+    d)
+    i) ![](images/2di.png){height=5em}
+    ii) ![](images/2dii.png){height=5em}
 
 ```rust
 //this is a code block with rust syntax highlighting
@@ -38,25 +65,26 @@ println!("Hello, {}", 42);
 [This][] is also a link. <!-- defined below -->
 This[^this_is_a_unique_footnote_label] is a footnote.
 
-[This]: https://www.uio.no
+[this]: https://www.uio.no
+
 [^this_is_a_unique_footnote_label]: In footnotes you can write anything tangentially related.
 
-* This
-* is
-* a
-* bullet
-* list
+- This
+- is
+- a
+- bullet
+- list
 
 1. This
 1. is
 1. a
 1. numbered
 1. list
-    a. with
-    a. sub
-    a. list
+   a. with
+   a. sub
+   a. list
 
-       with multiple paragraphs
+   with multiple paragraphs
 
 This is still on the first page
 
@@ -77,7 +105,7 @@ This
 : is a definition
 
 > this is a
-block quote
+> block quote
 
 This is a paragraph with inline \LaTeX\ math: $\frac{1}{2}$.
 Below is a math block:

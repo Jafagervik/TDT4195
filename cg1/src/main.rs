@@ -91,10 +91,28 @@ unsafe fn init_vao(vertices: &Vec<f32>, indices: &Vec<u32>) -> u32 {
 fn main() {
     // This will be a triangle with bottom side length being 5, starting from origo
     let coordinates: Vec<f32> = vec![-0.6, -0.6, 0.0, 0.6, -0.6, 0.0, 0.0, 0.6, 0.0];
+    // 2A)
+    // let coordinates: Vec<f32> = vec![0.6, 0.0, -0.8, -0.8, 0.4, 0.0, -1.2, 0.0, 1.2];
     // let square_coordinates: Vec<f32> = vec![-0.5, -0.5, 0.0, 0.5, -0.5, 0.0, 0.5, 0.5, 0.0, -0.5, 0.5, 0.0];
     let triangle_indices: Vec<u32> = vec![0, 1, 2];
     // Indices for square
     // let square_indices: Vec<u32> = vec![0, 1, 2, 2, 3, 0];
+
+    /* CIRCLE
+
+        let right = 0.5;
+    let bottom = -0.5;
+    let left = -0.5;
+    let top = 0.5;
+    let quad: Vec<f32> = vec![
+        //x, y, z, lx, ly
+        right, bottom, 0, 1.0, -1.0,
+        right, top, 0, 1.0, 1.0,
+        left, top, 0, -1.0, 1.0,
+        left, bottom, 0, -1.0, -1.0,
+    ];
+
+        */
     // Set up the necessary objects to deal with windows and event handling
     let el = glutin::event_loop::EventLoop::new();
     let wb = glutin::window::WindowBuilder::new()

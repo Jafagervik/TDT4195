@@ -48,9 +48,11 @@ It is possible to use special classes to format text: [this is a test]{.smallcap
     c)
     i) The reason that the depth buffer needs to be reset each frame is to
     ii)
-    iii)
-    iv)
-    v)
+    iii) Fragment/pixel shader, which is responsible for giving colors to each pixel. The second common shader is the vertex shader, which is responsible for determining positions of elements on the screen.
+    iv) The index buffer is used to optimize how we draw shapes. We use triangles in graphics since it requires the least amounts of vertices to achive a plane with a normal,
+    and lets say we want to draw a square: then we can use two of our previous vertices to draw it. we use bottom left and top right again, and only need to specify top left.
+    Index buffer for this would be [0, 1, 2, 2, 3, 0]. we now need less vertices.
+    v) We would pass in a non zero pointer when we want to start from an offset in our buffer. Perhaps our buffer contains other information prior to the vertex info.
 
     d)
     i) ![](images/2di.png){height=5em}

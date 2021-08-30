@@ -49,39 +49,35 @@ fn offset<T>(n: u32) -> *const c_void {
 unsafe fn init_vao(vertices: &Vec<f32>, indices: &Vec<u32>) -> u32 {
     // Returns the ID of the newly instantiated vertex array object upon its creation
 
-    // VAO
+    // VAO - way to bind vbo with spesification
     let mut vao: u32 = 0; // Create
-                          // let array_ptr = &mut array as *mut u32;
-                          // let mut array_ptr: *mut u32 = &array;
-    gl::GenVertexArrays(0, &mut vao); // Generate
+    gl::GenVertexArrays(1, &mut vao); // Generate
     gl::BindVertexArray(vao); // Bind
 
-    // VBO - buffer
+    // VBO - buffer for the vertices/positions
     let mut vbo: u32 = 0;
-    // let buffer_ptr = &mut vbo as *mut u32;
-    // let mut buffer_ptr: *mut u32 = &buffer;
-    gl::GenBuffers(0, &mut vbo);
-    gl::BindBuffer(gl::ARRAY_BUFFER, vbo);
+    gl::GenBuffers(1, &mut vbo); // creates buffer, generates an id for the vertex buffer - stored on vram
+    gl::BindBuffer(gl::ARRAY_BUFFER, vbo); // Binding is sort of like creating layers in photoshop
     gl::BufferData(
         gl::ARRAY_BUFFER,
         byte_size_of_array(&vertices),
         pointer_to_array(&vertices),
         gl::STATIC_DRAW,
     );
-    // TODO: Change stride if we use both xyz and colors in same array, and pointer accordingly
+    // Change stride if we use both xyz and colors in same array, and pointer accordingly
     // Vaa = Vertex attrib array
     let index = 1; // Important for shader!
-    let size = 3;
+    let size = 3; // 3 vertices
     let stride = 0; // we only store coordinates and nothing else.
     let pointer = 0 as *const c_void;
 
     gl::VertexAttribPointer(index, size, gl::FLOAT, gl::FALSE, stride, pointer);
     gl::EnableVertexAttribArray(index);
 
-    // Indices = connect the dots, multiple usecases for same vertices.
-    let mut index_buffer: u32 = 0;
-    gl::GenBuffers(0, &mut index_buffer);
-    gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, index_buffer);
+    // Index buffer object = connect the dots, multiple usecases for same vertices.
+    let mut ibo: u32 = 0;
+    gl::GenBuffers(1, &mut ibo);
+    gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, ibo);
     gl::BufferData(
         gl::ELEMENT_ARRAY_BUFFER,
         byte_size_of_array(&indices),
@@ -95,8 +91,10 @@ unsafe fn init_vao(vertices: &Vec<f32>, indices: &Vec<u32>) -> u32 {
 fn main() {
     // This will be a triangle with bottom side length being 5, starting from origo
     let coordinates: Vec<f32> = vec![-0.6, -0.6, 0.0, 0.6, -0.6, 0.0, 0.0, 0.6, 0.0];
-    // Just draw from 1st to 3rd coordinate
-    let indices: Vec<u32> = vec![0, 1, 2];
+    // let square_coordinates: Vec<f32> = vec![-0.5, -0.5, 0.0, 0.5, -0.5, 0.0, 0.5, 0.5, 0.0, -0.5, 0.5, 0.0];
+    let triangle_indices: Vec<u32> = vec![0, 1, 2];
+    // Indices for square
+    // let square_indices: Vec<u32> = vec![0, 1, 2, 2, 3, 0];
     // Set up the necessary objects to deal with windows and event handling
     let el = glutin::event_loop::EventLoop::new();
     let wb = glutin::window::WindowBuilder::new()
@@ -155,15 +153,15 @@ fn main() {
 
         // == // Set up your VAO here
         unsafe {
-            let vao = init_vao(&coordinates, &indices);
+            let vao = init_vao(&coordinates, &triangle_indices);
             gl::BindVertexArray(vao); // Bind
-            let num_of_elements = 3;
-            //gl::DrawArrays(gl::TRIANGLES, 0, 3);
+                                      //
+            let num_of_indeces = 3; // We have 3 indeces
             gl::DrawElements(
                 gl::LINE_STRIP,
-                num_of_elements * 3,
-                gl::UNSIGNED_SHORT,
-                0 as *const c_void,
+                num_of_indeces,
+                gl::UNSIGNED_INT, // Index buffer is U32
+                offset::<u32>(0), // we're starting from first element anyways, but using the function provided anyways
             );
         }
 
@@ -177,10 +175,13 @@ fn main() {
         //        .link();
         unsafe {
             // Creates shader. using multiple attaches since they return self, and link them all together at the end
-            let mut _shdr = shader::ShaderBuilder::new()
+            let shdr = shader::ShaderBuilder::new()
                 .attach_file("../shaders/simple.vert")
                 .attach_file("../shaders/simple.frag")
                 .link();
+            shdr.activate();
+            // let mut txt = String::new();
+            // shdr.get_uniform_location(&mut txt);
         }
 
         // Used to demonstrate keyboard handling -- feel free to remove

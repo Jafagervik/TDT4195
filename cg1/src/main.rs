@@ -176,10 +176,10 @@ fn main() {
                                       //
             let num_of_indeces = 3; // We have 3 indeces
             gl::DrawElements(
-                gl::LINE_STRIP,
+                gl::TRIANGLES,
                 num_of_indeces,
-                gl::UNSIGNED_INT, // Index buffer is U32
-                offset::<u32>(0), // we're starting from first element anyways, but using the function provided anyways
+                gl::UNSIGNED_INT,   // Index buffer is U32
+                0 as *const c_void, // we're starting from first element anyways, but using the function provided anyways
             );
         }
 
@@ -198,10 +198,9 @@ fn main() {
                 .attach_file(".\\shaders\\simple.frag")
                 .link();
             shdr.activate();
-            // let mut txt = String::new();
-            // shdr.get_uniform_location(&mut txt);
+            let location: i32 = shdr.get_uniform_location("u_Color");
+            gl::Uniform4f(location, 0.6, 0.3, 0.8, 1.0);
         }
-
         // Used to demonstrate keyboard handling -- feel free to remove
         let mut _arbitrary_number = 0.0;
 

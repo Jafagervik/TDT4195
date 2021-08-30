@@ -1,9 +1,8 @@
-#version 450 core
+#version 460 core
 
 // In: 
 // Out: a vector4 containing the positons generateb by the vertex shader
-in layout(location=1) in vec3 position;
-// in layout(location=1) vec4 vertex; This will connect vertex to a color/fragment
+layout(location=0) in vec3 position;
 
 void main()
 {

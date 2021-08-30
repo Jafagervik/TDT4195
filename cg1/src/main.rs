@@ -66,7 +66,7 @@ unsafe fn init_vao(vertices: &Vec<f32>, indices: &Vec<u32>) -> u32 {
     );
     // Change stride if we use both xyz and colors in same array, and pointer accordingly
     // Vaa = Vertex attrib array
-    let index = 1; // Important for shader!
+    let index = 0; // Important for shader!
     let size = 3; // 3 vertices
     let stride = 0; // we only store coordinates and nothing else.
     let pointer = 0 as *const c_void;
@@ -176,8 +176,8 @@ fn main() {
         unsafe {
             // Creates shader. using multiple attaches since they return self, and link them all together at the end
             let shdr = shader::ShaderBuilder::new()
-                .attach_file("../shaders/simple.vert")
-                .attach_file("../shaders/simple.frag")
+                .attach_file(".\\shaders\\simple.vert")
+                .attach_file(".\\shaders\\simple.frag")
                 .link();
             shdr.activate();
             // let mut txt = String::new();
@@ -192,7 +192,7 @@ fn main() {
         // The main rendering loop
         loop {
             let now = std::time::Instant::now();
-            let elapsed = now.duration_since(first_frame_time).as_secs_f32();
+            let _elapsed = now.duration_since(first_frame_time).as_secs_f32();
             let delta_time = now.duration_since(last_frame_time).as_secs_f32();
             last_frame_time = now;
 

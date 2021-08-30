@@ -1,12 +1,11 @@
-#version 450 core
+#version 460 core
 
 // In: any additional inputs from vertex shader
 // Out: vec4 with color
-out vec4 color;
-// layout(location=1) out vec4 colour;
+layout(location = 0) out vec4 color;
 
 void main()
 {   
     // Color red on the RGBA
-    color = vec4(1.0f, 0.0f, 0.0f, 1.0f);
+    color = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 }

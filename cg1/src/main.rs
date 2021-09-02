@@ -173,14 +173,6 @@ fn main() {
         unsafe {
             let vao = init_vao(&coordinates, &triangle_indices);
             gl::BindVertexArray(vao); // Bind
-                                      //
-            let num_of_indeces = 3; // We have 3 indeces
-            gl::DrawElements(
-                gl::TRIANGLES,
-                num_of_indeces,
-                gl::UNSIGNED_INT,   // Index buffer is U32
-                0 as *const c_void, // we're starting from first element anyways, but using the function provided anyways
-            );
         }
 
         // Basic usage of shader helper:
@@ -198,8 +190,8 @@ fn main() {
                 .attach_file(".\\shaders\\simple.frag")
                 .link();
             shdr.activate();
-            let location: i32 = shdr.get_uniform_location("u_Color");
-            gl::Uniform4f(location, 0.6, 0.3, 0.8, 1.0);
+            // let location: i32 = shdr.get_uniform_location("u_Color");
+            // gl::Uniform4f(location, 0.6, 0.3, 0.8, 1.0);
         }
         // Used to demonstrate keyboard handling -- feel free to remove
         let mut _arbitrary_number = 0.0;
@@ -238,6 +230,14 @@ fn main() {
                 gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
 
                 // Issue the necessary commands to draw your scene here
+                let num_of_indices = 3; // We have 3 indices
+                gl::DrawElements(
+                    gl::TRIANGLES,
+                    num_of_indices,
+                    gl::UNSIGNED_INT,   // Index buffer is U32
+                    0 as *const c_void, // we're starting from first element anyways, but using the function provided anyways
+                );
+
             }
 
             context.swap_buffers().unwrap();

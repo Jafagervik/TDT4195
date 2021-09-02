@@ -35,9 +35,9 @@ It is possible to use special classes to format text: [this is a test]{.smallcap
 
 2.  a)
     ![](images/2a.png){height=5em}
-    i) The name of this phenomenon is
-    ii) It occurs when
-    iii) The purpose of this is to
+    i) The name of this phenomenon is tearing
+    ii) It occurs when application writes to frame buffer simultaniously while the display controller is reading
+    iii) The purpose of this is to ... ?
 
     b)
     ![](images/2b.png){height=5em}

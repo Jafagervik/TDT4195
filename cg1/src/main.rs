@@ -42,8 +42,6 @@ fn offset<T>(n: u32) -> *const c_void {
 // Get a null pointer (equivalent to an offset of 0)
 // ptr::null()
 // let p = 0 as *const c_void
-// Shader - small program that runs on gpu
-// for vertex shader : vertices
 
 // == // Modify and complete the function below for the first task
 unsafe fn init_vao(vertices: &Vec<f32>, indices: &Vec<u32>) -> u32 {
@@ -64,7 +62,7 @@ unsafe fn init_vao(vertices: &Vec<f32>, indices: &Vec<u32>) -> u32 {
         pointer_to_array(&vertices),
         gl::STATIC_DRAW,
     );
-    // Change stride if we use both xyz and colors in same array, and pointer accordingly
+
     // Vaa = Vertex attrib array
     let index = 0; // Important for shader!
     let size = 3; // 3 vertices
@@ -89,18 +87,19 @@ unsafe fn init_vao(vertices: &Vec<f32>, indices: &Vec<u32>) -> u32 {
 }
 
 fn main() {
-    // This will be a triangle with bottom side length being 5, starting from origo
-    let coordinates: Vec<f32> = vec![-0.6, -0.6, 0.0, 0.6, -0.6, 0.0, 0.0, 0.6, 0.0];
+    // let coordinates: Vec<f32> = vec![-0.6, -0.6, 0.0, 0.6, -0.6, 0.0, 0.0, 0.6, 0.0];
     // 2A)
-    // let coordinates: Vec<f32> = vec![0.6, 0.0, -0.8, -0.8, 0.4, 0.0, -1.2, 0.0, 1.2];
+    let coordinates: Vec<f32> = vec![0.6, -0.8, -1.2, 0.0, 0.4, 0.0, -0.8, -0.2, 1.2];
     // let square_coordinates: Vec<f32> = vec![-0.5, -0.5, 0.0, 0.5, -0.5, 0.0, 0.5, 0.5, 0.0, -0.5, 0.5, 0.0];
     let triangle_indices: Vec<u32> = vec![0, 1, 2];
+    // 2b)
+    // let triangle_indices: Vec<u32> = vec![0, 2, 1];
     // Indices for square
     // let square_indices: Vec<u32> = vec![0, 1, 2, 2, 3, 0];
 
     /* CIRCLE
 
-        let right = 0.5;
+    let right = 0.5;
     let bottom = -0.5;
     let left = -0.5;
     let top = 0.5;
@@ -183,6 +182,8 @@ fn main() {
         //     shader::ShaderBuilder::new()
         //        .attach_file("./path/to/shader.file")
         //        .link();
+
+        // let location: u32;
         unsafe {
             // Creates shader. using multiple attaches since they return self, and link them all together at the end
             let shdr = shader::ShaderBuilder::new()
@@ -190,9 +191,11 @@ fn main() {
                 .attach_file(".\\shaders\\simple.frag")
                 .link();
             shdr.activate();
-            // let location: i32 = shdr.get_uniform_location("u_Color");
-            // gl::Uniform4f(location, 0.6, 0.3, 0.8, 1.0);
+
+            // 3d)
+            // location: i32 = shdr.get_uniform_location("u_Color");
         }
+        // gl::Uniform4f(location, 0.6, 0.3, 0.8, 1.0);
         // Used to demonstrate keyboard handling -- feel free to remove
         let mut _arbitrary_number = 0.0;
 
@@ -237,7 +240,6 @@ fn main() {
                     gl::UNSIGNED_INT,   // Index buffer is U32
                     0 as *const c_void, // we're starting from first element anyways, but using the function provided anyways
                 );
-
             }
 
             context.swap_buffers().unwrap();

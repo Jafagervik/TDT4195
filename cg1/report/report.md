@@ -53,6 +53,7 @@ It is possible to use special classes to format text: [this is a test]{.smallcap
     and lets say we want to draw a square: then we can use two of our previous vertices to draw it. we use bottom left and top right again, and only need to specify top left.
     Index buffer for this would be [0, 1, 2, 2, 3, 0]. we now need less vertices.
     v) We would pass in a non zero pointer when we want to start from an offset in our buffer. Perhaps our buffer contains other information prior to the vertex info.
+    How would I xall VertexAttribPointer
 
     d)
     i) ![](images/2di.png){height=5em}

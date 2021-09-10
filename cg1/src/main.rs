@@ -43,12 +43,12 @@ fn offset<T>(n: u32) -> *const c_void {
 
 fn read_triangles_from_file() -> Result<Vec<f32>, ()> {
     // Takes in an arbitraray amount of trinagles from a file
-    let mut vertices: Vec<f32> = Vec::new();
+    let mut vertices: Vec<f32>;
     match File::open(".\\src\\triangles.txt") {
         Ok(mut file) => {
             let mut content = String::new();
 
-            // Read all the file content into a variable (ignoring the result of the operation).
+            // Read all the file content into a variable
             file.read_to_string(&mut content).unwrap();
 
             vertices = content
@@ -58,7 +58,7 @@ fn read_triangles_from_file() -> Result<Vec<f32>, ()> {
             println!("{}", content);
             Ok(vertices)
         }
-        // Error handling.
+        // Error handling
         Err(error) => {
             println!("Error message: {}", error);
             std::process::exit(1);
@@ -114,7 +114,7 @@ unsafe fn init_vao(vertices: &Vec<f32>, indices: &Vec<u32>) -> u32 {
 }
 
 fn main() {
-    // let coordinates: Vec<f32> = vec![-0.6, -0.6, 0.0, 0.6, -0.6, 0.0, 0.0, 0.6, 0.0];
+    let coordinates: Vec<f32> = vec![-0.6, -0.6, 0.0, 0.6, -0.6, 0.0, 0.0, 0.6, 0.0];
     let multiple_triangles_coordinates: Vec<f32> = vec![
         -0.95, -0.95, 0.0, -0.75, -0.95, 0.0, -0.85, -0.65, 0.0, 0.75, -0.95, 0.0, 0.95, -0.95,
         0.0, 0.85, -0.75, 0.0, 0.95, 0.95, 0.0, 0.75, 0.95, 0.0, 0.85, 0.75, 0.0, -0.75, 0.95, 0.0,
@@ -195,7 +195,7 @@ fn main() {
 
         // == // Set up your VAO here
         unsafe {
-            let vao = init_vao(&multiple_triangles_coordinates, &multiple_triangles_indices);
+            let vao = init_vao(&coordinates, &triangle_indices);
             gl::BindVertexArray(vao); // Bind
         }
 
@@ -267,7 +267,9 @@ fn main() {
 
                 // Issue the necessary commands to draw your scene here
                 // gl::Uniform4f(location, r, 0.3, 0.8, 1.0);
-                let num_of_indices = 3 * 5; // We have 15 indices for the 5 triangles
+
+                // We have 15 indices for the 5 triangles, 3 for 1 and so on
+                let num_of_indices = 3 * 1;
                 let num_of_square_indices = 6;
                 gl::DrawElements(
                     gl::TRIANGLES,

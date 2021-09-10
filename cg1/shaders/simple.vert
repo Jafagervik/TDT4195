@@ -1,4 +1,4 @@
-#version 450 core
+#version 460 core
 
 // In: 
 // Out: a vector4 containing the positons generateb by the vertex shader

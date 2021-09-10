@@ -88,12 +88,21 @@ unsafe fn init_vao(vertices: &Vec<f32>, indices: &Vec<u32>) -> u32 {
 
 fn main() {
     let coordinates: Vec<f32> = vec![-0.6, -0.6, 0.0, 0.6, -0.6, 0.0, 0.0, 0.6, 0.0];
+    let multiple_triangles_coordinates: Vec<f32> = vec![
+        -0.95, -0.95, 0.0, -0.75, -0.95, 0.0, -0.85, -0.65, 0.0, 0.75, -0.95, 0.0, 0.95, -0.95,
+        0.0, 0.85, -0.75, 0.0, 0.95, 0.95, 0.0, 0.75, 0.95, 0.0, 0.85, 0.75, 0.0, -0.75, 0.95, 0.0,
+        -0.95, 0.95, 0.0, -0.85, 0.75, 0.0, -0.33, -0.33, 0.0, 0.33, -0.33, 0.0, 0.0, 0.33, 0.0,
+    ];
     // 2A)
     // let coordinates: Vec<f32> = vec![0.6, -0.8, -1.2, 0.0, 0.4, 0.0, -0.8, -0.2, 1.2];
     let square_coordinates: Vec<f32> = vec![
         -0.5, -0.5, 0.0, 0.5, -0.5, 0.0, 0.5, 0.5, 0.0, -0.5, 0.5, 0.0,
     ];
     let triangle_indices: Vec<u32> = vec![0, 1, 2];
+    let mut multiple_triangles_indices: Vec<u32> = Vec::with_capacity(3 * 5);
+    for i in 0..16 {
+        multiple_triangles_indices.push(i)
+    }
     // 2b)
     // let triangle_indices: Vec<u32> = vec![0, 2, 1];
     // Indices for square
@@ -172,7 +181,7 @@ fn main() {
 
         // == // Set up your VAO here
         unsafe {
-            let vao = init_vao(&square_coordinates, &square_indices);
+            let vao = init_vao(&multiple_triangles_coordinates, &multiple_triangles_indices);
             gl::BindVertexArray(vao); // Bind
         }
 
@@ -185,9 +194,11 @@ fn main() {
         //        .attach_file("./path/to/shader.file")
         //        .link();
 
+        /*
         let location: i32;
         let mut r: f32 = 0.05;
         let mut increment: f32 = 0.05;
+        */
         unsafe {
             // Creates shader. using multiple attaches since they return self, and link them all together at the end
             let shdr = shader::ShaderBuilder::new()
@@ -197,9 +208,11 @@ fn main() {
             shdr.activate();
 
             // 3d)
+            /*
             location = shdr.get_uniform_location("u_Color");
             assert!(location != -1);
             gl::Uniform4f(location, r, 0.3, 0.8, 1.0);
+            */
         }
         // Used to demonstrate keyboard handling -- feel free to remove
         let mut _arbitrary_number = 0.0;
@@ -238,22 +251,23 @@ fn main() {
                 gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
 
                 // Issue the necessary commands to draw your scene here
-                gl::Uniform4f(location, r, 0.3, 0.8, 1.0);
-                let num_of_indices = 3; // We have 3 indices
+                // gl::Uniform4f(location, r, 0.3, 0.8, 1.0);
+                let num_of_indices = 3 * 5; // We have 15 indices for the 5 triangles
                 let num_of_square_indices = 6;
                 gl::DrawElements(
                     gl::TRIANGLES,
-                    num_of_square_indices,
+                    num_of_indices,
                     gl::UNSIGNED_INT,   // Index buffer is U32
                     0 as *const c_void, // we're starting from first element anyways, but using the function provided anyways
                 );
             }
+            /*
             if r > 1.0 {
                 increment = -0.05;
             } else if r < 0.0 {
                 increment = 0.05
             }
-            r += increment;
+            r += increment;*/
 
             context.swap_buffers().unwrap();
         }

@@ -1,4 +1,6 @@
 extern crate nalgebra_glm as glm;
+use std::fs::File;
+use std::io::Read;
 use std::sync::{Arc, Mutex, RwLock};
 use std::thread;
 use std::{mem, os::raw::c_void, ptr};
@@ -37,6 +39,31 @@ fn size_of<T>() -> i32 {
 // Get an offset in bytes for n units of type T
 fn offset<T>(n: u32) -> *const c_void {
     (n * mem::size_of::<T>() as u32) as *const T as *const c_void
+}
+
+fn read_triangles_from_file() -> Result<Vec<f32>, ()> {
+    // Takes in an arbitraray amount of trinagles from a file
+    let mut vertices: Vec<f32> = Vec::new();
+    match File::open(".\\src\\triangles.txt") {
+        Ok(mut file) => {
+            let mut content = String::new();
+
+            // Read all the file content into a variable (ignoring the result of the operation).
+            file.read_to_string(&mut content).unwrap();
+
+            vertices = content
+                .split(" ")
+                .map(|x| x.parse::<f32>().unwrap())
+                .collect();
+            println!("{}", content);
+            Ok(vertices)
+        }
+        // Error handling.
+        Err(error) => {
+            println!("Error message: {}", error);
+            std::process::exit(1);
+        }
+    }
 }
 
 // Get a null pointer (equivalent to an offset of 0)
@@ -87,7 +114,7 @@ unsafe fn init_vao(vertices: &Vec<f32>, indices: &Vec<u32>) -> u32 {
 }
 
 fn main() {
-    let coordinates: Vec<f32> = vec![-0.6, -0.6, 0.0, 0.6, -0.6, 0.0, 0.0, 0.6, 0.0];
+    // let coordinates: Vec<f32> = vec![-0.6, -0.6, 0.0, 0.6, -0.6, 0.0, 0.0, 0.6, 0.0];
     let multiple_triangles_coordinates: Vec<f32> = vec![
         -0.95, -0.95, 0.0, -0.75, -0.95, 0.0, -0.85, -0.65, 0.0, 0.75, -0.95, 0.0, 0.95, -0.95,
         0.0, 0.85, -0.75, 0.0, 0.95, 0.95, 0.0, 0.75, 0.95, 0.0, 0.85, 0.75, 0.0, -0.75, 0.95, 0.0,
@@ -95,6 +122,8 @@ fn main() {
     ];
     // 2A)
     // let coordinates: Vec<f32> = vec![0.6, -0.8, -1.2, 0.0, 0.4, 0.0, -0.8, -0.2, 1.2];
+    // 3f)
+    // let coordinates = read_triangles_from_file().unwrap();
     let square_coordinates: Vec<f32> = vec![
         -0.5, -0.5, 0.0, 0.5, -0.5, 0.0, 0.5, 0.5, 0.0, -0.5, 0.5, 0.0,
     ];
@@ -108,21 +137,6 @@ fn main() {
     // Indices for square
     let square_indices: Vec<u32> = vec![0, 1, 2, 2, 3, 0];
 
-    /* CIRCLE
-
-    let right = 0.5;
-    let bottom = -0.5;
-    let left = -0.5;
-    let top = 0.5;
-    let quad: Vec<f32> = vec![
-        //x, y, z, lx, ly
-        right, bottom, 0, 1.0, -1.0,
-        right, top, 0, 1.0, 1.0,
-        left, top, 0, -1.0, 1.0,
-        left, bottom, 0, -1.0, -1.0,
-    ];
-
-        */
     // Set up the necessary objects to deal with windows and event handling
     let el = glutin::event_loop::EventLoop::new();
     let wb = glutin::window::WindowBuilder::new()
@@ -194,6 +208,7 @@ fn main() {
         //        .attach_file("./path/to/shader.file")
         //        .link();
 
+        // Uniform varibales to change color
         /*
         let location: i32;
         let mut r: f32 = 0.05;
@@ -261,7 +276,7 @@ fn main() {
                     0 as *const c_void, // we're starting from first element anyways, but using the function provided anyways
                 );
             }
-            /*
+            /* Logic for uniform variable
             if r > 1.0 {
                 increment = -0.05;
             } else if r < 0.0 {

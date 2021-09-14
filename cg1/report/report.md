@@ -31,17 +31,24 @@ iii) The purpose of this is to discard/remove the primitives where vertices are 
 
 b) ![](images/o2b.png)
 
-i) The triangle completely disappears if I give it the index buffer [1, 0, 2], [0, 2, 1] or [2, 1, 0]
-ii) It happens due to
-iii) The effect occurs when the indices 0 2 and 1 come after each other, despite which one you start from. The rule is that "".
+i) This phenomenon is also known as back face culling. It disappears.
+ii) It happens due to the direction the normal of the vertices are pointing to. Certain orderings of the index buffer makes opengl think it follows a clockwise order, thus the normal points away from the screen, and the triangle then dissapears.
+iii) The ordering of the index buffer, following the use of the right hand rule, needs to make the normal of e.g a triangle points outward toward the screen to avoid back face culling.
 
 c)
 i) The reason that the depth buffer needs to be reset each frame is to avoid comparing the new pixels with the depth values from last frame.
-ii)
+ii) If you have multiple overlapping shapes, you could use the fragment shader multiple times for the same pixel-
 iii) Fragment/pixel shader, which is responsible for giving colors to each pixel. The second common shader is the vertex shader, which is responsible for determining positions of elements on the screen.
 iv) The index buffer is used to optimize how we draw shapes. We use triangles in graphics since it requires the least amounts of vertices to achive a plane with a normal,
 and lets say we want to draw a square: then we can use two of our previous vertices to draw it. we use bottom left and top right again, and only need to specify top left.
-Index buffer for this would be [0, 1, 2, 2, 3, 0]. we now need less vertices.
+Index buffer for this would be:
+
+```rust
+// Example of index buffer for a square, using only 4 vertices instead of 6.
+let indexBuffer: Vec<f32> = vec![0,1,2,1,2,3];
+```
+
+. we now need less vertices.
 v) We would pass in a non zero pointer when we want to start from an offset in our buffer. Perhaps our buffer contains other information prior to the vertex info.
 How would I call VertexAttribPointer
 

@@ -71,7 +71,7 @@ fn read_triangles_from_file() -> Result<Vec<f32>, ()> {
 // let p = 0 as *const c_void
 
 // == // Modify and complete the function below for the first task
-unsafe fn init_vao(vertices: &Vec<f32>, indices: &Vec<u32>) -> u32 {
+unsafe fn init_vao(vertices: &Vec<f32>, indices: &Vec<u32>, colors: &Vec<f32>) -> u32 {
     // Returns the ID of the newly instantiated vertex array object upon its creation
 
     // VAO - way to bind vbo with spesification
@@ -87,6 +87,17 @@ unsafe fn init_vao(vertices: &Vec<f32>, indices: &Vec<u32>) -> u32 {
         gl::ARRAY_BUFFER,
         byte_size_of_array(&vertices),
         pointer_to_array(&vertices),
+        gl::STATIC_DRAW,
+    );
+
+    // CBO - buffer for the color buffer, RGBA
+    let mut cbo: u32 = 0;
+    gl::GenBuffers(1, &mut cbo);
+    gl::BindBuffer(gl::ARRAY_BUFFER, cbo);
+    gl::BufferData(
+        gl::ARRAY_BUFFER,
+        byte_size_of_array(&colors),
+        pointer_to_array(&colors),
         gl::STATIC_DRAW,
     );
 
@@ -115,27 +126,7 @@ unsafe fn init_vao(vertices: &Vec<f32>, indices: &Vec<u32>) -> u32 {
 
 fn main() {
     let coordinates: Vec<f32> = vec![-0.6, -0.6, 0.0, 0.6, -0.6, 0.0, 0.0, 0.6, 0.0];
-    let multiple_triangles_coordinates: Vec<f32> = vec![
-        -0.95, -0.95, 0.0, -0.75, -0.95, 0.0, -0.85, -0.65, 0.0, 0.75, -0.95, 0.0, 0.95, -0.95,
-        0.0, 0.85, -0.75, 0.0, 0.95, 0.95, 0.0, 0.75, 0.95, 0.0, 0.85, 0.75, 0.0, -0.75, 0.95, 0.0,
-        -0.95, 0.95, 0.0, -0.85, 0.75, 0.0, -0.33, -0.33, 0.0, 0.33, -0.33, 0.0, 0.0, 0.33, 0.0,
-    ];
-    // 2A)
-    // let coordinates: Vec<f32> = vec![0.6, -0.8, -1.2, 0.0, 0.4, 0.0, -0.8, -0.2, 1.2];
-    // 3f)
-    // let coordinates = read_triangles_from_file().unwrap();
-    let square_coordinates: Vec<f32> = vec![
-        -0.5, -0.5, 0.0, 0.5, -0.5, 0.0, 0.5, 0.5, 0.0, -0.5, 0.5, 0.0,
-    ];
     let triangle_indices: Vec<u32> = vec![0, 1, 2];
-    let mut multiple_triangles_indices: Vec<u32> = Vec::with_capacity(3 * 5);
-    for i in 0..16 {
-        multiple_triangles_indices.push(i)
-    }
-    // 2b)
-    // let triangle_indices: Vec<u32> = vec![0, 2, 1];
-    // Indices for square
-    let square_indices: Vec<u32> = vec![0, 1, 2, 2, 3, 0];
 
     // Set up the necessary objects to deal with windows and event handling
     let el = glutin::event_loop::EventLoop::new();
@@ -198,15 +189,6 @@ fn main() {
             let vao = init_vao(&coordinates, &triangle_indices);
             gl::BindVertexArray(vao); // Bind
         }
-
-        // Basic usage of shader helper:
-        // The example code below returns a shader object, which contains the field `.program_id`.
-        // The snippet is not enough to do the assignment, and will need to be modified (outside of
-        // just using the correct path), but it only needs to be called once
-        //
-        //     shader::ShaderBuilder::new()
-        //        .attach_file("./path/to/shader.file")
-        //        .link();
 
         // Uniform varibales to change color
         /*

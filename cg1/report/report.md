@@ -48,7 +48,6 @@ Index buffer for this would be:
 let indexBuffer: Vec<f32> = vec![0,1,2,1,2,3];
 ```
 
-. we now need less vertices.
 v) We would pass in a non zero pointer when we want to start from an offset in our buffer. Perhaps our buffer contains other information prior to the vertex info.
 How would I call VertexAttribPointer
 

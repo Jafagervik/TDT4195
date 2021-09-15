@@ -196,6 +196,13 @@ fn main() {
         let mut r: f32 = 0.05;
         let mut increment: f32 = 0.05;
         */
+        let aloc: i32;
+        let bloc: i32;
+        let cloc: i32;
+        let dloc: i32;
+        let eloc: i32;
+        let floc: i32;
+
         unsafe {
             // Creates shader. using multiple attaches since they return self, and link them all together at the end
             let shdr = shader::ShaderBuilder::new()
@@ -210,6 +217,18 @@ fn main() {
             assert!(location != -1);
             gl::Uniform4f(location, r, 0.3, 0.8, 1.0);
             */
+            aloc = shdr.get_uniform_location("aVal");
+            bloc = shdr.get_uniform_location("bVal");
+            cloc = shdr.get_uniform_location("cVal");
+            dloc = shdr.get_uniform_location("dVal");
+            eloc = shdr.get_uniform_location("eVal");
+            floc = shdr.get_uniform_location("fVal");
+            gl::Uniform1f(2, 0.2);
+            gl::Uniform1f(3, 0.2);
+            gl::Uniform1f(4, 0.2);
+            gl::Uniform1f(5, 0.2);
+            gl::Uniform1f(6, 0.2);
+            gl::Uniform1f(7, 0.2);
         }
         // Used to demonstrate keyboard handling -- feel free to remove
         let mut _arbitrary_number = 0.0;
@@ -256,8 +275,8 @@ fn main() {
                 gl::DrawElements(
                     gl::TRIANGLES,
                     num_of_indices,
-                    gl::UNSIGNED_INT,   // Index buffer is U32
-                    0 as *const c_void, // we're starting from first element anyways, but using the function provided anyways
+                    gl::UNSIGNED_INT,   
+                    0 as *const c_void, 
                 );
             }
             /* Logic for uniform variable

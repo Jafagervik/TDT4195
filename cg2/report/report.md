@@ -55,10 +55,30 @@ How would I call VertexAttribPointer
 Also have commented out how I used uniform variable to change the color of the drawn triangle(s)/square, but this isn't quite stable and crashes "randomly".
 
 ## Exercise 1
-b)
+b) 3 different triangles with different z-indices and colors
+![](images/o1b1.png)
+![](images/o1b2.png)
+![](images/o1b3.png)
+
+
+## Exercise 2
+a)
+image of alpha blending
+![](images/o2a.png)
+
+
+b) 
+i) Blended colors and exchanging triangles
+![](images/o2b1.png)
+
+ii) z index Blended colors and exchanging z-coordinates
+![](images/o2b2.png)
+
+
+
 ## Exercise 3
-b)
-c)
+b) a = _ | axis = _, b = _ | axis = _, c = _ | axis = _, d = _ | axis = _, e = _ | axis = _, f = _ | axis = _
+c) None of the elements in the bottom half of the MVP matrix were modified, thus no rotations could have occurred.
 ## Exercise 5
 b)
 d)

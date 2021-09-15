@@ -10,6 +10,8 @@ uniform layout(location = 5) in vec4 dVal;
 uniform layout(location = 6) in vec4 eVal;
 uniform layout(location = 7) in vec4 fVal;
 
+// uniform mat4 MVP
+
 void main()
 {
     mat4 MVP;

@@ -202,6 +202,8 @@ fn main() {
         let dloc: i32;
         let eloc: i32;
         let floc: i32;
+
+        let uniMvp: i32; 
         
         let aval: f32;
         let bval: f32;
@@ -209,6 +211,16 @@ fn main() {
         let dval: f32;
         let eval: f32;
         let fval: f32;
+
+        gl::mat4 model = gl::mat4();
+        gl::mat4 view = gl::lookAt(
+            gl::vec3(1.0, 0.0, 0.0),
+            gl::vec3(0.0, 1.0, 0.0),
+            gl::vec3(0.0, 0.0, 1.0),
+        );
+
+        gl::mat4 proj = gl::perspective(45.0, SCREEN_W / SCREEN_H, 1.0, 10.0);
+        gl::mat4 mvp = model * view * proj;
 
         unsafe {
             // Creates shader. using multiple attaches since they return self, and link them all together at the end
@@ -236,6 +248,9 @@ fn main() {
             gl::Uniform1f(5, 0.2);
             gl::Uniform1f(6, 0.2);
             gl::Uniform1f(7, 0.2);
+
+            uniMvp = shdr.get_uniform_location("MVP");
+            gl::Uniform4fv(uniMvp, 1, gl::FALSE, mvp.as_ptr());
         }
         // Used to demonstrate keyboard handling -- feel free to remove
         let mut _arbitrary_number = 0.0;

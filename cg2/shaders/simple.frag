@@ -9,6 +9,7 @@ layout(location = 0) out vec4 color;
 // uniform variable
 // uniform vec4 u_Color; 
 
+
 void main()
 {   
     // Color red on the RGBA

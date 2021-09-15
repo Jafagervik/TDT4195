@@ -196,6 +196,12 @@ fn main() {
         let mut r: f32 = 0.05;
         let mut increment: f32 = 0.05;
         */
+
+        let motion_value_x: f32 = 0;
+        let motion_value_y: f32 = 0;
+        let motion_value_z: f32 = 0;
+
+
         let aloc: i32;
         let bloc: i32;
         let cloc: i32;

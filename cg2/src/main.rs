@@ -202,6 +202,13 @@ fn main() {
         let dloc: i32;
         let eloc: i32;
         let floc: i32;
+        
+        let aval: f32;
+        let bval: f32;
+        let cval: f32;
+        let dval: f32;
+        let eval: f32;
+        let fval: f32;
 
         unsafe {
             // Creates shader. using multiple attaches since they return self, and link them all together at the end
@@ -238,7 +245,7 @@ fn main() {
         // The main rendering loop
         loop {
             let now = std::time::Instant::now();
-            let _elapsed = now.duration_since(first_frame_time).as_secs_f32();
+            let elapsed = now.duration_since(first_frame_time).as_secs_f32();
             let delta_time = now.duration_since(last_frame_time).as_secs_f32();
             last_frame_time = now;
 
@@ -279,6 +286,14 @@ fn main() {
                     0 as *const c_void, 
                 );
             }
+            aval = elapsed.sin();
+            bval = elapsed.sin();
+            cval = elapsed.sin();
+            dval = elapsed.sin();
+            eval = elapsed.sin();
+            fval = elapsed.sin();
+
+
             /* Logic for uniform variable
             if r > 1.0 {
                 increment = -0.05;

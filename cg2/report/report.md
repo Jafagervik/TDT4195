@@ -53,3 +53,12 @@ How would I call VertexAttribPointer
 ](images/o3f.png)
 
 Also have commented out how I used uniform variable to change the color of the drawn triangle(s)/square, but this isn't quite stable and crashes "randomly".
+
+## Exercise 1
+b)
+## Exercise 3
+b)
+c)
+## Exercise 5
+b)
+d)

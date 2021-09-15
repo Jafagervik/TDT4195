@@ -211,16 +211,19 @@ fn main() {
         let dval: f32;
         let eval: f32;
         let fval: f32;
+        
+        // Translate into negative z
+        // let translation: gl::Mat4 = gl::translation(&gl::vec3(0.0, 0.0, -1.0));
 
         gl::mat4 model = gl::mat4();
         gl::mat4 view = gl::lookAt(
             gl::vec3(1.0, 0.0, 0.0),
             gl::vec3(0.0, 1.0, 0.0),
-            gl::vec3(0.0, 0.0, 1.0),
+            gl::vec3(0.0, 0.0, -1.0),
         );
 
-        gl::mat4 proj = gl::perspective(45.0, SCREEN_W / SCREEN_H, 1.0, 10.0);
-        gl::mat4 mvp = model * view * proj;
+        gl::mat4 proj = gl::perspective(45.0, SCREEN_W / SCREEN_H, 1.0, 100.0);
+        gl::mat4 mvp = proj * view * model;
 
         unsafe {
             // Creates shader. using multiple attaches since they return self, and link them all together at the end

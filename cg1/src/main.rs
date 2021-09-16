@@ -114,14 +114,14 @@ unsafe fn init_vao(vertices: &Vec<f32>, indices: &Vec<u32>) -> u32 {
 }
 
 fn main() {
-    let coordinates: Vec<f32> = vec![-0.6, -0.6, 0.0, 0.6, -0.6, 0.0, 0.0, 0.6, 0.0];
+    // let coordinates: Vec<f32> = vec![-0.6, -0.6, 0.0, 0.6, -0.6, 0.0, 0.0, 0.6, 0.0];
     let multiple_triangles_coordinates: Vec<f32> = vec![
         -0.95, -0.95, 0.0, -0.75, -0.95, 0.0, -0.85, -0.65, 0.0, 0.75, -0.95, 0.0, 0.95, -0.95,
         0.0, 0.85, -0.75, 0.0, 0.95, 0.95, 0.0, 0.75, 0.95, 0.0, 0.85, 0.75, 0.0, -0.75, 0.95, 0.0,
         -0.95, 0.95, 0.0, -0.85, 0.75, 0.0, -0.33, -0.33, 0.0, 0.33, -0.33, 0.0, 0.0, 0.33, 0.0,
     ];
     // 2A)
-    // let coordinates: Vec<f32> = vec![0.6, -0.8, -1.2, 0.0, 0.4, 0.0, -0.8, -0.2, 1.2];
+    let coordinates: Vec<f32> = vec![0.6, -0.8, -1.2, 0.0, 0.4, 0.0, -0.8, -0.2, 1.2];
     // 3f)
     // let coordinates = read_triangles_from_file().unwrap();
     let square_coordinates: Vec<f32> = vec![

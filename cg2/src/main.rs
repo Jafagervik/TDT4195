@@ -102,13 +102,13 @@ unsafe fn init_vao(vertices: &Vec<f32>, indices: &Vec<u32>, colors: &Vec<f32>) -
     );
 
     // Vaa = Vertex attrib array
-    let index = 0; // Important for shader!
-    let size = 3; // 3 vertices
-    let stride = 0; // we only store coordinates and nothing else.
-    let pointer = 0 as *const c_void;
 
-    gl::VertexAttribPointer(index, size, gl::FLOAT, gl::FALSE, stride, pointer);
-    gl::EnableVertexAttribArray(index);
+    gl::VertexAttribPointer(0, 3, gl::FLOAT, gl::FALSE, 0, 0 as *const c_void);
+    gl::EnableVertexAttribArray(0);
+
+    // 2nd attribute buffer is for colors
+    gl::VertexAttribPointer(1, 3, gl::FLOAT, gl::FALSE, 0, 0 as *const c_void);
+    gl::EnableVertexAttribArray(1);
 
     // Index buffer object = connect the dots, multiple usecases for same vertices.
     let mut ibo: u32 = 0;
@@ -125,8 +125,21 @@ unsafe fn init_vao(vertices: &Vec<f32>, indices: &Vec<u32>, colors: &Vec<f32>) -
 }
 
 fn main() {
-    let coordinates: Vec<f32> = vec![-0.6, -0.6, 0.0, 0.6, -0.6, 0.0, 0.0, 0.6, 0.0];
-    let triangle_indices: Vec<u32> = vec![0, 1, 2];
+    let coordinates: Vec<f32> = vec![
+        -0.9, -0.8, 0.0, 0.3, -0.8, 0.0, -0.2, 0.4, 0.0, 0.7, 0.8, 0.0, 0.9, 0.8, 0.0, 0.8, 0.9,
+        0.0, 0.2, 0.1, 0.0, 0.6, 0.1, 0.0, 0.4, 0.4, 0.0,
+    ];
+    let overlappingCoordinates: Vec<f32> = vec![
+        -0.5, 0.0, 0.0, 0.9, 0.0, 0.0, 0.0, 0.9, 0.25, 0.5, 0.0, 0.9, -0.4, 0.0, 0.2, 0.9, 0.1,
+        0.0, 0.2, 0.9, 0.25, 0.5, 0.2, 0.9, -0.3, 0.0, 0.4, 0.9, 0.2, 0.0, 0.4, 0.9, 0.25, 0.5,
+        0.4, 0.9,
+    ];
+    let triangle_indices: Vec<u32> = vec![0, 1, 2, 3, 4, 5, 6, 7, 8];
+    let colors: Vec<f32> = vec![0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0];
+    let overlappingColors: Vec<f32> = vec![
+        0.0, 0.0, 1.0, 0.9, 0.0, 0.0, 1.0, 0.9, 0.0, 0.0, 1.0, 0.9, 0.0, 1.0, 0.0, 0.8, 0.0, 1.0,
+        8.0, 0.8, 0.0, 0.0, 1.0, 0.8, 1.0, 0.0, 0.0, 0.6, 1.0, 0.0, 0.0, 0.6, 1.0, 0.0, 0.0, 0.6,
+    ];
 
     // Set up the necessary objects to deal with windows and event handling
     let el = glutin::event_loop::EventLoop::new();
@@ -186,7 +199,7 @@ fn main() {
 
         // == // Set up your VAO here
         unsafe {
-            let vao = init_vao(&coordinates, &triangle_indices);
+            let vao = init_vao(&coordinates, &triangle_indices, &colors);
             gl::BindVertexArray(vao); // Bind
         }
 
@@ -195,7 +208,7 @@ fn main() {
         let location: i32;
         let mut r: f32 = 0.05;
         let mut increment: f32 = 0.05;
-        */
+
 
         let motion_value_x: f32 = 0;
         let motion_value_y: f32 = 0;
@@ -209,15 +222,13 @@ fn main() {
         let eloc: i32;
         let floc: i32;
 
-        let uniMvp: i32; 
-        
+        let uniMvp: i32;
         let aval: f32;
         let bval: f32;
         let cval: f32;
         let dval: f32;
         let eval: f32;
         let fval: f32;
-        
         // Translate into negative z
         // let translation: gl::Mat4 = gl::translation(&gl::vec3(0.0, 0.0, -1.0));
 
@@ -230,6 +241,7 @@ fn main() {
 
         gl::mat4 proj = gl::perspective(45.0, SCREEN_W / SCREEN_H, 1.0, 100.0);
         gl::mat4 mvp = proj * view * model;
+        */
 
         unsafe {
             // Creates shader. using multiple attaches since they return self, and link them all together at the end
@@ -244,7 +256,6 @@ fn main() {
             location = shdr.get_uniform_location("u_Color");
             assert!(location != -1);
             gl::Uniform4f(location, r, 0.3, 0.8, 1.0);
-            */
             aloc = shdr.get_uniform_location("aVal");
             bloc = shdr.get_uniform_location("bVal");
             cloc = shdr.get_uniform_location("cVal");
@@ -260,6 +271,7 @@ fn main() {
 
             uniMvp = shdr.get_uniform_location("MVP");
             gl::Uniform4fv(uniMvp, 1, gl::FALSE, mvp.as_ptr());
+            */
         }
         // Used to demonstrate keyboard handling -- feel free to remove
         let mut _arbitrary_number = 0.0;
@@ -301,22 +313,23 @@ fn main() {
                 // gl::Uniform4f(location, r, 0.3, 0.8, 1.0);
 
                 // We have 15 indices for the 5 triangles, 3 for 1 and so on
-                let num_of_indices = 3 * 1;
+                let num_of_indices = 3 * 3;
                 let num_of_square_indices = 6;
                 gl::DrawElements(
                     gl::TRIANGLES,
                     num_of_indices,
-                    gl::UNSIGNED_INT,   
-                    0 as *const c_void, 
+                    gl::UNSIGNED_INT,
+                    0 as *const c_void,
                 );
             }
+            /*
             aval = elapsed.sin();
             bval = elapsed.sin();
             cval = elapsed.sin();
             dval = elapsed.sin();
             eval = elapsed.sin();
             fval = elapsed.sin();
-
+            */
 
             /* Logic for uniform variable
             if r > 1.0 {
@@ -393,9 +406,6 @@ fn main() {
                 // Handle escape separately
                 match keycode {
                     Escape => {
-                        *control_flow = ControlFlow::Exit;
-                    }
-                    Q => {
                         *control_flow = ControlFlow::Exit;
                     }
                     _ => {}

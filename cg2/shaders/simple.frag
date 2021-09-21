@@ -4,6 +4,7 @@
 // Out: vec4 with color
 
 // Change color over time
+in vec4 fragmentColor;
 layout(location = 0) out vec4 color;
 
 // uniform variable
@@ -13,6 +14,6 @@ layout(location = 0) out vec4 color;
 void main()
 {   
     // Color red on the RGBA
-    color = vec4(1.0f, 0.5f, 0.0f, 1.0f);
+    color = fragmentColor;
     // color = u_Color
 }

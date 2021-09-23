@@ -216,6 +216,7 @@ fn main() {
         let dloc: i32;
         let eloc: i32;
         let floc: i32;
+        let uniMvp: i32;
 
         /*
         let motion_value_x: f32 = 0;
@@ -225,7 +226,6 @@ fn main() {
         // Translate into negative z
         // let translation: gl::Mat4 = gl::translation(&gl::vec3(0.0, 0.0, -1.0));
         /*
-        let uniMvp: i32;
         gl::mat4 model = gl::mat4();
         gl::mat4 view = gl::lookAt(
             gl::vec3(1.0, 0.0, 0.0),
@@ -250,6 +250,8 @@ fn main() {
             dloc = shdr.get_uniform_location("dVal");
             eloc = shdr.get_uniform_location("eVal");
             floc = shdr.get_uniform_location("fVal");
+
+            uniMvp = shdr.get_uniform_location("MVP");
 
             // TODO: Do I actually need these?
             /*
@@ -314,6 +316,8 @@ fn main() {
                 gl::Uniform1f(dloc, elapsed.sin());
                 // gl::Uniform1f(eloc, elapsed.sin());
                 gl::Uniform1f(floc, elapsed.sin());
+
+                // MVP Matrix
 
                 // We have 15 indices for the 5 triangles, 3 for 1 and so on
                 let num_of_indices = 3 * 1;

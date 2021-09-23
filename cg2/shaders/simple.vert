@@ -26,11 +26,13 @@ uniform float fVal;
 
 void main()
 {
+    
     mat4 MVP;
     MVP[0] = vec4(aVal, dVal, 0.0, 0.0);
     MVP[1] = vec4(bVal, eVal, 0.0, 0.0);
     MVP[2] = vec4(0.0, 0.0, 1.0, 0.0);
     MVP[3] = vec4(cVal, fVal, 0.0, 1.0);
+    
     gl_Position = MVP*vec4(position, 1.0);
     // gl_Position = vec4(position, 1.0);
     fragmentColor = vertexColor;

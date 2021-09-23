@@ -5,7 +5,7 @@
 
 // Change color over time
 in vec4 fragmentColor;
-layout(location = 0) out vec4 color;
+out vec4 color;
 
 // uniform variable
 // uniform vec4 u_Color; 

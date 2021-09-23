@@ -15,18 +15,24 @@ uniform layout(location = 6) in vec4 eVal;
 uniform layout(location = 7) in vec4 fVal;
 */
 
+uniform float aVal;
+uniform float bVal;
+uniform float cVal;
+uniform float dVal;
+uniform float eVal;
+uniform float fVal;
+
 // uniform mat4 MVP
 
 void main()
 {
-    /*
     mat4 MVP;
-    MVP[0] = vec4(1.0, 0.0, 0.0, 0.0);
-    MVP[1] = vec4(0.0, 1.0, 0.0, 0.0);
-    MVP[2] = vec4(1.0, 0.0, 1.0, 0.0);
-    MVP[3] = vec4(1.0, 0.0, 0.0, 1.0);
-    gl_Position = MVP*vec4(position, 1.0);*/
-    gl_Position = vec4(position, 1.0);
+    MVP[0] = vec4(aVal, dVal, 0.0, 0.0);
+    MVP[1] = vec4(bVal, eVal, 0.0, 0.0);
+    MVP[2] = vec4(0.0, 0.0, 1.0, 0.0);
+    MVP[3] = vec4(cVal, fVal, 0.0, 1.0);
+    gl_Position = MVP*vec4(position, 1.0);
+    // gl_Position = vec4(position, 1.0);
     fragmentColor = vertexColor;
 }
 

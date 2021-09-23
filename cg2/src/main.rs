@@ -90,7 +90,7 @@ unsafe fn init_vao(vertices: &Vec<f32>, indices: &Vec<u32>, colors: &Vec<f32>) -
         gl::STATIC_DRAW,
     );
 
-    // CBO - buffer for the color buffer, RGBA
+    // CBO - vbo for the color buffer, RGBA
     let mut cbo: u32 = 0;
     gl::GenBuffers(1, &mut cbo);
     gl::BindBuffer(gl::ARRAY_BUFFER, cbo);
@@ -102,7 +102,6 @@ unsafe fn init_vao(vertices: &Vec<f32>, indices: &Vec<u32>, colors: &Vec<f32>) -
     );
 
     // Vaa = Vertex attrib array
-
     gl::VertexAttribPointer(0, 3, gl::FLOAT, gl::FALSE, 0, 0 as *const c_void);
     gl::EnableVertexAttribArray(0);
 
@@ -125,6 +124,10 @@ unsafe fn init_vao(vertices: &Vec<f32>, indices: &Vec<u32>, colors: &Vec<f32>) -
 }
 
 fn main() {
+    let c: Vec<f32> = vec![-0.2, -0.6, 0.0, 0.3, -0.6, 0.0, 0.0, 0.2, 0.0];
+    let i: Vec<u32> = vec![0, 1, 2];
+    let col: Vec<f32> = vec![1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0];
+
     let coordinates: Vec<f32> = vec![
         0.5, -0.8, 0.0, 0.8, -0.8, 0.0, 0.65, 0.4, 0.0, 0.7, 0.2, 0.0, 0.9, 0.2, 0.0, 0.8, 0.5,
         0.0, 0.2, 0.1, 0.0, 0.6, 0.1, 0.0, 0.4, 0.4, 0.0,
@@ -134,6 +137,7 @@ fn main() {
         0.2, 0.9, 0.4, 0.5, 0.2, 0.4, -0.3, 0.0, 0.4,
     ];
     let triangle_indices: Vec<u32> = vec![0, 1, 2, 3, 4, 5, 6, 7, 8];
+    let overlapping_triangle_indices: Vec<u32> = vec![6, 7, 8, 3, 4, 5, 0, 1, 2];
     let colors: Vec<f32> = vec![
         0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0,
         0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0,
@@ -201,26 +205,11 @@ fn main() {
 
         // == // Set up your VAO here
         unsafe {
-            let vao = init_vao(
-                &overLappingCoordinates,
-                &triangle_indices,
-                &overLappingColors,
-            );
+            let vao = init_vao(&c, &i, &col);
             gl::BindVertexArray(vao); // Bind
         }
 
         // Uniform varibales to change color
-        /*
-        let location: i32;
-        let mut r: f32 = 0.05;
-        let mut increment: f32 = 0.05;
-
-
-        let motion_value_x: f32 = 0;
-        let motion_value_y: f32 = 0;
-        let motion_value_z: f32 = 0;
-
-
         let aloc: i32;
         let bloc: i32;
         let cloc: i32;
@@ -228,26 +217,23 @@ fn main() {
         let eloc: i32;
         let floc: i32;
 
-        let uniMvp: i32;
-        let aval: f32;
-        let bval: f32;
-        let cval: f32;
-        let dval: f32;
-        let eval: f32;
-        let fval: f32;
+        /*
+        let motion_value_x: f32 = 0;
+        let motion_value_y: f32 = 0;
+        let motion_value_z: f32 = 0;*/
+
         // Translate into negative z
         // let translation: gl::Mat4 = gl::translation(&gl::vec3(0.0, 0.0, -1.0));
-
+        /*
+        let uniMvp: i32;
         gl::mat4 model = gl::mat4();
         gl::mat4 view = gl::lookAt(
             gl::vec3(1.0, 0.0, 0.0),
             gl::vec3(0.0, 1.0, 0.0),
             gl::vec3(0.0, 0.0, -1.0),
         );
-
         gl::mat4 proj = gl::perspective(45.0, SCREEN_W / SCREEN_H, 1.0, 100.0);
-        gl::mat4 mvp = proj * view * model;
-        */
+        gl::mat4 mvp = proj * view * model;*/
 
         unsafe {
             // Creates shader. using multiple attaches since they return self, and link them all together at the end
@@ -258,23 +244,24 @@ fn main() {
             shdr.activate();
 
             // 3d)
-            /*
-            location = shdr.get_uniform_location("u_Color");
-            assert!(location != -1);
-            gl::Uniform4f(location, r, 0.3, 0.8, 1.0);
             aloc = shdr.get_uniform_location("aVal");
             bloc = shdr.get_uniform_location("bVal");
             cloc = shdr.get_uniform_location("cVal");
             dloc = shdr.get_uniform_location("dVal");
             eloc = shdr.get_uniform_location("eVal");
             floc = shdr.get_uniform_location("fVal");
-            gl::Uniform1f(2, 0.2);
-            gl::Uniform1f(3, 0.2);
-            gl::Uniform1f(4, 0.2);
-            gl::Uniform1f(5, 0.2);
-            gl::Uniform1f(6, 0.2);
-            gl::Uniform1f(7, 0.2);
 
+            // TODO: Do I actually need these?
+            /*
+            gl::Uniform1f(aloc, 0.5);
+            gl::Uniform1f(bloc, 0.5);
+            gl::Uniform1f(cloc, 0.5);
+            gl::Uniform1f(dloc, 0.5);
+            gl::Uniform1f(eloc, 0.5);
+            gl::Uniform1f(floc, 0.5);
+            */
+
+            /*
             uniMvp = shdr.get_uniform_location("MVP");
             gl::Uniform4fv(uniMvp, 1, gl::FALSE, mvp.as_ptr());
             */
@@ -316,10 +303,20 @@ fn main() {
                 gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
 
                 // Issue the necessary commands to draw your scene here
-                // gl::Uniform4f(location, r, 0.3, 0.8, 1.0);
+
+                // NORMAL VALUES
+                gl::Uniform1f(aloc, 1.0);
+                gl::Uniform1f(eloc, 1.0);
+
+                // gl::Uniform1f(aloc, elapsed.sin());
+                gl::Uniform1f(bloc, elapsed.sin());
+                gl::Uniform1f(cloc, elapsed.sin());
+                gl::Uniform1f(dloc, elapsed.sin());
+                // gl::Uniform1f(eloc, elapsed.sin());
+                gl::Uniform1f(floc, elapsed.sin());
 
                 // We have 15 indices for the 5 triangles, 3 for 1 and so on
-                let num_of_indices = 3 * 3;
+                let num_of_indices = 3 * 1;
                 let num_of_square_indices = 6;
                 gl::DrawElements(
                     gl::TRIANGLES,
@@ -336,14 +333,6 @@ fn main() {
             eval = elapsed.sin();
             fval = elapsed.sin();
             */
-
-            /* Logic for uniform variable
-            if r > 1.0 {
-                increment = -0.05;
-            } else if r < 0.0 {
-                increment = 0.05
-            }
-            r += increment;*/
 
             context.swap_buffers().unwrap();
         }

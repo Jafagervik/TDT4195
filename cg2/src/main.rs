@@ -221,19 +221,20 @@ fn main() {
         /*
         let motion_value_x: f32 = 0;
         let motion_value_y: f32 = 0;
-        let motion_value_z: f32 = 0;*/
+        let motion_value_z: f32 = 0;
 
         // Translate into negative z
         // let translation: gl::Mat4 = gl::translation(&gl::vec3(0.0, 0.0, -1.0));
-        /*
-        gl::mat4 model = gl::mat4();
+        */
+        
+        gl::mat4 model = gl::mat4(1.0);
         gl::mat4 view = gl::lookAt(
             gl::vec3(1.0, 0.0, 0.0),
             gl::vec3(0.0, 1.0, 0.0),
             gl::vec3(0.0, 0.0, -1.0),
         );
         gl::mat4 proj = gl::perspective(45.0, SCREEN_W / SCREEN_H, 1.0, 100.0);
-        gl::mat4 mvp = proj * view * model;*/
+        gl::mat4 mvp = proj * view * model;
 
         unsafe {
             // Creates shader. using multiple attaches since they return self, and link them all together at the end
@@ -283,13 +284,27 @@ fn main() {
             // Handle keyboard input
             if let Ok(keys) = pressed_keys.lock() {
                 for key in keys.iter() {
+                    // I'm using WASDEQ to handle inputs
                     match key {
+                        VirtualKeyCode::W => {
+                            _arbitrary_number *= delta_time;
+                        }
                         VirtualKeyCode::A => {
-                            _arbitrary_number += delta_time;
+                            _arbitrary_number *= delta_time;
+                        }
+                        VirtualKeyCode::S => {
+                            _arbitrary_number *= delta_time;
                         }
                         VirtualKeyCode::D => {
-                            _arbitrary_number -= delta_time;
+                            _arbitrary_number *= delta_time;
                         }
+                        VirtualKeyCode::E => {
+                            _arbitrary_number *= delta_time;
+                        }
+                        VirtualKeyCode::Q => {
+                            _arbitrary_number *= delta_time;
+                        }
+
 
                         _ => {}
                     }
@@ -307,6 +322,7 @@ fn main() {
                 // Issue the necessary commands to draw your scene here
 
                 // NORMAL VALUES
+                /*
                 gl::Uniform1f(aloc, 1.0);
                 gl::Uniform1f(eloc, 1.0);
 
@@ -316,8 +332,10 @@ fn main() {
                 gl::Uniform1f(dloc, elapsed.sin());
                 // gl::Uniform1f(eloc, elapsed.sin());
                 gl::Uniform1f(floc, elapsed.sin());
+                */
 
                 // MVP Matrix
+                gl::Uniform4fv(uniMvp, 1, 0, mvp.as_ptr());
 
                 // We have 15 indices for the 5 triangles, 3 for 1 and so on
                 let num_of_indices = 3 * 1;

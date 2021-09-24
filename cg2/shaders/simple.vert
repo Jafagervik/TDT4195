@@ -6,34 +6,28 @@ layout(location = 1) in vec4 vertexColor;
 
 out vec4 fragmentColor;
 
-/*
-uniform layout(location = 2) in vec4 aVal;
-uniform layout(location = 3) in vec4 bVal;
-uniform layout(location = 4) in vec4 cVal;
-uniform layout(location = 5) in vec4 dVal;
-uniform layout(location = 6) in vec4 eVal;
-uniform layout(location = 7) in vec4 fVal;
-*/
+uniform mat4 transformation;
+uniform mat4 time;
+uniform mat4 opacity;
 
-uniform float aVal;
-uniform float bVal;
-uniform float cVal;
-uniform float dVal;
-uniform float eVal;
-uniform float fVal;
-
-// uniform mat4 MVP
-
-void main()
+void main()  
 {
-    
+    // a scales to smaller the less the value
+    // d turns right side more up, looks like translate
+    // b moves top vertices more to the right the lesser the value
+    // e scales down, mostly height
+    // c translates to right
+    // f translates upwards
+
+    /*
     mat4 MVP;
     MVP[0] = vec4(aVal, dVal, 0.0, 0.0);
     MVP[1] = vec4(bVal, eVal, 0.0, 0.0);
     MVP[2] = vec4(0.0, 0.0, 1.0, 0.0);
     MVP[3] = vec4(cVal, fVal, 0.0, 1.0);
+    */
     
-    gl_Position = MVP*vec4(position, 1.0);
+    gl_Position = transformation*vec4(position, 1.0);
     // gl_Position = vec4(position, 1.0);
     fragmentColor = vertexColor;
 }

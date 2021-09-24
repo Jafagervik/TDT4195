@@ -90,8 +90,12 @@ unsafe fn init_vao(vertices: &Vec<f32>, indices: &Vec<u32>, colors: &Vec<f32>) -
         gl::STATIC_DRAW,
     );
 
+    // Vaa = Vertex attrib array
+    gl::VertexAttribPointer(0, 3, gl::FLOAT, gl::FALSE, 0, 0 as *const c_void);
+    gl::EnableVertexAttribArray(0);
+
     // CBO - vbo for the color buffer, RGBA
-    let mut cbo: u32 = 0;
+    let mut cbo: u32 = 1;
     gl::GenBuffers(1, &mut cbo);
     gl::BindBuffer(gl::ARRAY_BUFFER, cbo);
     gl::BufferData(
@@ -101,12 +105,8 @@ unsafe fn init_vao(vertices: &Vec<f32>, indices: &Vec<u32>, colors: &Vec<f32>) -
         gl::STATIC_DRAW,
     );
 
-    // Vaa = Vertex attrib array
-    gl::VertexAttribPointer(0, 3, gl::FLOAT, gl::FALSE, 0, 0 as *const c_void);
-    gl::EnableVertexAttribArray(0);
-
     // 2nd attribute buffer is for colors
-    gl::VertexAttribPointer(1, 3, gl::FLOAT, gl::FALSE, 0, 0 as *const c_void);
+    gl::VertexAttribPointer(1, 4, gl::FLOAT, gl::FALSE, size_of::<f32>() * 4, 0 as *const c_void);
     gl::EnableVertexAttribArray(1);
 
     // Index buffer object = connect the dots, multiple usecases for same vertices.
@@ -124,30 +124,6 @@ unsafe fn init_vao(vertices: &Vec<f32>, indices: &Vec<u32>, colors: &Vec<f32>) -
 }
 
 fn main() {
-    let c: Vec<f32> = vec![-0.2, -0.6, 0.0, 0.3, -0.6, 0.0, 0.0, 0.2, 0.0];
-    let i: Vec<u32> = vec![0, 1, 2];
-    let col: Vec<f32> = vec![1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0];
-
-    let overLappingCoordinates: Vec<f32> = vec![
-    -0.5, 0.0, 0.8, 0.9, 0.0, 0.8, 0.0, 0.9, 0.8, 0.5, 0.0, 0.6, -0.4, 0.0, 0.6, 0.9, 0.1, 0.6,
-    0.2, 0.9, 0.4, 0.5, 0.2, 0.4, -0.3, 0.0, 0.4
-    ];
-    let overlapping_triangle_indices: Vec<u32> = vec![6, 7, 8, 3, 4, 5, 0, 1, 2];
-    let overLappingColors: Vec<f32> = vec![
-        0.0, 0.0, 1.0, 0.9, 0.0, 0.0, 1.0, 0.9, 0.0, 0.0, 1.0, 0.9, 0.0, 1.0, 0.0, 0.8, 0.0, 1.0,
-        0.0, 0.8, 0.0, 1.0, 0.0, 0.8, 1.0, 0.0, 0.0, 0.6, 1.0, 0.0, 0.0, 0.6, 1.0, 0.0, 0.0, 0.6,
-    ];
-            
-    let coordinates: Vec<f32> = vec![
-        0.5, -0.8, 0.0, 0.8, -0.8, 0.0, 0.65, 0.4, 0.0, 0.7, 0.2, 0.0, 0.9, 0.2, 0.0, 0.8, 0.5,
-        0.0, 0.2, 0.1, 0.0, 0.6, 0.1, 0.0, 0.4, 0.4, 0.0
-    ];
-    let triangle_indices: Vec<u32> = vec![0, 1, 2, 3, 4, 5, 6, 7, 8];
-    let colors: Vec<f32> = vec![
-        0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0,
-        0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0,
-    ];
-
     // Set up the necessary objects to deal with windows and event handling
     let el = glutin::event_loop::EventLoop::new();
     let wb = glutin::window::WindowBuilder::new()
@@ -203,72 +179,93 @@ fn main() {
                 util::get_gl_string(gl::SHADING_LANGUAGE_VERSION)
             );
         }
+        let c: Vec<f32> = vec![
+        -0.8, -0.6, 0.0, 
+        -0.5, -0.6, 0.0, 
+        -0.65, -0.2, 0.0,
+
+        0.5, -0.6, 0.0, 
+        0.8, -0.6, 0.0, 
+        0.65, -0.2, 0.0,
+
+        -0.2, 0.3, 0.0, 
+        0.2, 0.6, 0.0, 
+        0.0, 0.6, 0.0,
+        ];
+        let i: Vec<u32> = vec![0, 1, 2, 3, 4, 5, 6, 7, 8];
+        let col: Vec<f32> = vec![
+        1.0, 0.0, 0.0, 0.9, 
+        1.0, 0.0, 0.0, 0.9, 
+        1.0, 0.0, 0.0, 0.9,
+        
+        0.0, 1.0, 0.0, 0.8, 
+        0.0, 1.0, 0.0, 0.8, 
+        0.0, 1.0, 0.0, 0.8,
+
+        0.0, 0.0, 1.0, 0.7, 
+        0.0, 0.0, 1.0, 0.7, 
+        0.0, 0.0, 1.0, 0.7,
+        ];
+
+        let overLappingCoordinates: Vec<f32> = vec![
+        -0.3, 0.0, 0.8, 
+        0.3, 0.0, 0.8, 
+        0.0, 0.6, 0.8, 
+        
+        -0.1, 0.3, 0.6, 
+        0.3, 0.0, 0.6, 
+        0.3, 0.6, 0.6,
+
+        -0.4, 0.6, 0.4, 
+        -0.4, 0.0, 0.4,
+        0.2, 0.3, 0.4
+        ];
+        let overlapping_triangle_indices: Vec<u32> = vec![6, 7, 8, 3, 4, 5, 0, 1, 2];
+        let overLappingColors: Vec<f32> = vec![
+            0.0, 0.0, 1.0, 0.9, 
+            0.0, 0.0, 1.0, 0.9, 
+            0.0, 0.0, 1.0, 0.9, 
+            
+            0.0, 1.0, 0.0, 0.8, 
+            0.0, 1.0, 0.0, 0.8, 
+            0.0, 1.0, 0.0, 0.8, 
+            
+            1.0, 0.0, 0.0, 0.6, 
+            1.0, 0.0, 0.0, 0.6, 
+            1.0, 0.0, 0.0, 0.6
+        ];
+                
+        let coordinates: Vec<f32> = vec![
+            -0.6, -0.6, 0.0,
+            0.6, -0.6, 0.0,
+            0.0, 0.6, 0.0
+        ];
+        let triangle_indices: Vec<u32> = vec![0, 1, 2];
+        let colors: Vec<f32> = vec![
+            0.0, 0.0, 1.0, 1.0, 
+            0.0, 0.0, 1.0, 1.0, 
+            0.0, 0.0, 1.0, 1.0
+        ];
 
         // == // Set up your VAO here
         unsafe {
-            let vao = init_vao(&c, &i, &col);
-            gl::BindVertexArray(vao); // Bind
+            let vao = init_vao(&coordinates, &triangle_indices, &colors);
         }
 
-        // Uniform varibales to change color
-        let aloc: i32;
-        let bloc: i32;
-        let cloc: i32;
-        let dloc: i32;
-        let eloc: i32;
-        let floc: i32;
-        let uniMvp: i32;
-
-        
-        let motion_value_x: f32 = 0.0;
-        let motion_value_y: f32 = 0.0;
-        let motion_value_z: f32 = 0.0;
-
-        // Translate into negative z
-        // let translation: gl::Mat4 = gl::translation(&gl::vec3(0.0, 0.0, -1.0));
-        
-        
-        gl::mat4 model = gl::mat4(1.0);
-        gl::mat4 view = gl::lookAt(
-            gl::vec3(1.0, 0.0, 0.0),
-            gl::vec3(0.0, 1.0, 0.0),
-            gl::vec3(0.0, 0.0, -1.0),
-        );
-        gl::mat4 proj = gl::perspective(45.0, SCREEN_W / SCREEN_H, 1.0, 100.0);
-        gl::mat4 mvp = proj * view * model;
-
+        let trans_loc: i32;
+        let time_loc: i32;
+        let opacity_loc: i32;
         unsafe {
             // Creates shader. using multiple attaches since they return self, and link them all together at the end
             let shdr = shader::ShaderBuilder::new()
                 .attach_file(".\\shaders\\simple.vert")
                 .attach_file(".\\shaders\\simple.frag")
                 .link();
+            trans_loc = shdr.get_uniform_location("transformation");
+            time_loc = shdr.get_uniform_location("time");
+            opacity_loc = shdr.get_uniform_location("opacity");
+
             shdr.activate();
-
-            // 3d)
-            aloc = shdr.get_uniform_location("aVal");
-            bloc = shdr.get_uniform_location("bVal");
-            cloc = shdr.get_uniform_location("cVal");
-            dloc = shdr.get_uniform_location("dVal");
-            eloc = shdr.get_uniform_location("eVal");
-            floc = shdr.get_uniform_location("fVal");
-
-            uniMvp = shdr.get_uniform_location("MVP");
-
-            // TODO: Do I actually need these?
-            /*
-            gl::Uniform1f(aloc, 0.5);
-            gl::Uniform1f(bloc, 0.5);
-            gl::Uniform1f(cloc, 0.5);
-            gl::Uniform1f(dloc, 0.5);
-            gl::Uniform1f(eloc, 0.5);
-            gl::Uniform1f(floc, 0.5);
-            */
-
-            /*
-            uniMvp = shdr.get_uniform_location("MVP");
-            gl::Uniform4fv(uniMvp, 1, gl::FALSE, mvp.as_ptr());
-            */
         }
         // Used to demonstrate keyboard handling -- feel free to remove
         let mut _arbitrary_number = 0.0;
@@ -276,6 +273,38 @@ fn main() {
         let first_frame_time = std::time::Instant::now();
         let mut last_frame_time = first_frame_time;
         // The main rendering loop
+
+        let persp_mat: glm::Mat4 = glm::perspective(
+            (SCREEN_H as f32) / (SCREEN_W as f32),
+            90.0,
+            1.0,
+            100.0
+        );
+
+        let persp_trans: glm::Mat4 = glm::translation(
+            &glm::vec3(0.0, 0.0, -2.0)
+        );
+
+        let mut proj: glm::Mat4 = persp_mat*persp_trans;
+
+        let model: glm::Mat4 = glm::identity();
+        let mut trans_matrix: glm::Mat4 = glm::identity(); 
+
+        let mut rot_x = 0.0;
+        let mut rot_y = 0.0;
+        let rot_step: f32 = 2.0;
+
+        let mut opacity: f32 = 0.0;
+        let mut v_time:f32 = 0.0;
+
+        let mut trans_x = 0.0;
+        let mut trans_y = 0.0;
+        let mut trans_z = -3.0;
+        let trans_step: f32 = 0.1;
+
+
+        let mut view: glm::Mat4 = glm::identity();
+
         loop {
             let now = std::time::Instant::now();
             let elapsed = now.duration_since(first_frame_time).as_secs_f32();
@@ -288,56 +317,74 @@ fn main() {
                     // I'm using WASDEQ to handle inputs
                     match key {
                         VirtualKeyCode::W => {
-                            motion_value_y *= delta_time;
-                        }
+                            trans_z += trans_step;
+                        },
                         VirtualKeyCode::A => {
-                            motion_value_x *= -delta_time;
-                        }
+                            trans_x += trans_step;
+                        },
                         VirtualKeyCode::S => {
-                            motion_value_y *= -delta_time;
-                        }
+                            trans_z -= trans_step;
+                        },
                         VirtualKeyCode::D => {
-                            motion_value_x *= delta_time;
-                        }
+                            trans_x -= trans_step;
+                        },
                         VirtualKeyCode::E => {
-                            motion_value_y *= delta_time;
-                        }
+                            trans_y -= trans_step;
+                        },
                         VirtualKeyCode::Q => {
-                            motion_value_z *= -delta_time;
-                        }
-
-
+                            trans_y += trans_step;
+                        },
+                        VirtualKeyCode::R => {
+                            // Reset camera
+                            view = glm::identity();
+                        },
+                        VirtualKeyCode::Up => {
+                            rot_x -= rot_step;
+                        },
+                        VirtualKeyCode::Down => {
+                            rot_x += rot_step;
+                        },
+                        VirtualKeyCode::Left => {
+                            rot_y -= rot_step;
+                        },
+                        VirtualKeyCode::Right => {
+                            rot_y += rot_step;
+                        },
                         _ => {}
                     }
                 }
             }
+
             // Handle mouse movement. delta contains the x and y movement of the mouse since last frame in pixels
             if let Ok(mut delta) = mouse_delta.lock() {
                 *delta = (0.0, 0.0);
             }
 
+            opacity = (elapsed * 10.0).sin() / 2.0 + 0.5;
+            v_time = elapsed.sin();
+            let trans: glm::Mat4 = glm::translation(&glm::vec3(trans_x, trans_y, trans_z));
+            let rot: glm::Mat4 = glm::rotation(rot_x.to_radians(), &glm::vec3(1.0, 0.0, 0.0)) * glm::rotation(rot_y.to_radians(), &glm::vec3(0.0, 1.0, 0.0));
+            let scale: glm::Mat4 = glm::identity();
+
+            view = rot * trans * view;
+            let mut mod_view = view * model;
+            let trans_mat = proj * mod_view;
+
+            trans_x = 0.0;
+            trans_y = 0.0;
+            trans_z = 0.0;
+            rot_y = 0.0;
+            rot_x = 0.0;
+            
             unsafe {
                 gl::ClearColor(0.76862745, 0.71372549, 0.94901961, 1.0); // moon raker, full opacity
                 gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
 
+                gl::Uniform1f(opacity_loc, opacity);
+                gl::Uniform1f(time_loc, v_time);
+                gl::UniformMatrix4fv(trans_loc, 1, gl::FALSE, trans_mat.as_ptr());
+                
                 // Issue the necessary commands to draw your scene here
-
-                // NORMAL VALUES
-                /*
-                gl::Uniform1f(aloc, 1.0);
-                gl::Uniform1f(eloc, 1.0);
-
-                // gl::Uniform1f(aloc, elapsed.sin());
-                gl::Uniform1f(bloc, elapsed.sin());
-                gl::Uniform1f(cloc, elapsed.sin());
-                gl::Uniform1f(dloc, elapsed.sin());
-                // gl::Uniform1f(eloc, elapsed.sin());
-                gl::Uniform1f(floc, elapsed.sin());
-                */
-
-                // MVP Matrix
-                gl::Uniform4fv(uniMvp, 1, 0, mvp.as_ptr());
-
                 // We have 15 indices for the 5 triangles, 3 for 1 and so on
                 let num_of_indices = 3 * 1;
                 let num_of_square_indices = 6;
@@ -345,18 +392,9 @@ fn main() {
                     gl::TRIANGLES,
                     num_of_indices,
                     gl::UNSIGNED_INT,
-                    0 as *const c_void,
+                    ptr::null(),
                 );
             }
-            /*
-            aval = elapsed.sin();
-            bval = elapsed.sin();
-            cval = elapsed.sin();
-            dval = elapsed.sin();
-            eval = elapsed.sin();
-            fval = elapsed.sin();
-            */
-
             context.swap_buffers().unwrap();
         }
     });

@@ -77,8 +77,9 @@ ii) z index Blended colors and exchanging z-coordinates
 
 
 ## Exercise 3
-b) a = _ | axis = _, b = _ | axis = _, c = _ | axis = _, d = _ | axis = _, e = _ | axis = _, f = _ | axis = _
-c) None of the elements in the bottom half of the MVP matrix were modified, thus no rotations could have occurred.
+b) a = scale, gets smaller the lesser the value | axis = x, b = shear | axis = y, c = translation, to right | axis = none, d = shear, looked like right side got turnt more up | axis = x, e = scale, height | axis = y, f = translates upwards | axis = none
+
+c) To have rotation we have to have [cos ø, sin ø]^T , [-sin ø, cos ø]^T in some way or another in the matrix. For Rot_x, e doesn't have to be 1, and sin ø and - sin ø doesn't both give 0. Rot_y: e don't have to be 1, and since sin ø have to be 1, a have to be 1, but cos90 is 1, and this can't be true. Rot_z: d and f would have to be 0.
 ## Exercise 5
 b)
 d)

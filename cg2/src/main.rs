@@ -128,23 +128,24 @@ fn main() {
     let i: Vec<u32> = vec![0, 1, 2];
     let col: Vec<f32> = vec![1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0];
 
-    let coordinates: Vec<f32> = vec![
-        0.5, -0.8, 0.0, 0.8, -0.8, 0.0, 0.65, 0.4, 0.0, 0.7, 0.2, 0.0, 0.9, 0.2, 0.0, 0.8, 0.5,
-        0.0, 0.2, 0.1, 0.0, 0.6, 0.1, 0.0, 0.4, 0.4, 0.0,
-    ];
     let overLappingCoordinates: Vec<f32> = vec![
-        -0.5, 0.0, 0.8, 0.9, 0.0, 0.8, 0.0, 0.9, 0.8, 0.5, 0.0, 0.6, -0.4, 0.0, 0.6, 0.9, 0.1, 0.6,
-        0.2, 0.9, 0.4, 0.5, 0.2, 0.4, -0.3, 0.0, 0.4,
+    -0.5, 0.0, 0.8, 0.9, 0.0, 0.8, 0.0, 0.9, 0.8, 0.5, 0.0, 0.6, -0.4, 0.0, 0.6, 0.9, 0.1, 0.6,
+    0.2, 0.9, 0.4, 0.5, 0.2, 0.4, -0.3, 0.0, 0.4
     ];
-    let triangle_indices: Vec<u32> = vec![0, 1, 2, 3, 4, 5, 6, 7, 8];
     let overlapping_triangle_indices: Vec<u32> = vec![6, 7, 8, 3, 4, 5, 0, 1, 2];
-    let colors: Vec<f32> = vec![
-        0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0,
-        0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0,
-    ];
     let overLappingColors: Vec<f32> = vec![
         0.0, 0.0, 1.0, 0.9, 0.0, 0.0, 1.0, 0.9, 0.0, 0.0, 1.0, 0.9, 0.0, 1.0, 0.0, 0.8, 0.0, 1.0,
         0.0, 0.8, 0.0, 1.0, 0.0, 0.8, 1.0, 0.0, 0.0, 0.6, 1.0, 0.0, 0.0, 0.6, 1.0, 0.0, 0.0, 0.6,
+    ];
+            
+    let coordinates: Vec<f32> = vec![
+        0.5, -0.8, 0.0, 0.8, -0.8, 0.0, 0.65, 0.4, 0.0, 0.7, 0.2, 0.0, 0.9, 0.2, 0.0, 0.8, 0.5,
+        0.0, 0.2, 0.1, 0.0, 0.6, 0.1, 0.0, 0.4, 0.4, 0.0
+    ];
+    let triangle_indices: Vec<u32> = vec![0, 1, 2, 3, 4, 5, 6, 7, 8];
+    let colors: Vec<f32> = vec![
+        0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0,
+        0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0,
     ];
 
     // Set up the necessary objects to deal with windows and event handling
@@ -218,14 +219,14 @@ fn main() {
         let floc: i32;
         let uniMvp: i32;
 
-        /*
-        let motion_value_x: f32 = 0;
-        let motion_value_y: f32 = 0;
-        let motion_value_z: f32 = 0;
+        
+        let motion_value_x: f32 = 0.0;
+        let motion_value_y: f32 = 0.0;
+        let motion_value_z: f32 = 0.0;
 
         // Translate into negative z
         // let translation: gl::Mat4 = gl::translation(&gl::vec3(0.0, 0.0, -1.0));
-        */
+        
         
         gl::mat4 model = gl::mat4(1.0);
         gl::mat4 view = gl::lookAt(
@@ -287,22 +288,22 @@ fn main() {
                     // I'm using WASDEQ to handle inputs
                     match key {
                         VirtualKeyCode::W => {
-                            _arbitrary_number *= delta_time;
+                            motion_value_y *= delta_time;
                         }
                         VirtualKeyCode::A => {
-                            _arbitrary_number *= delta_time;
+                            motion_value_x *= -delta_time;
                         }
                         VirtualKeyCode::S => {
-                            _arbitrary_number *= delta_time;
+                            motion_value_y *= -delta_time;
                         }
                         VirtualKeyCode::D => {
-                            _arbitrary_number *= delta_time;
+                            motion_value_x *= delta_time;
                         }
                         VirtualKeyCode::E => {
-                            _arbitrary_number *= delta_time;
+                            motion_value_y *= delta_time;
                         }
                         VirtualKeyCode::Q => {
-                            _arbitrary_number *= delta_time;
+                            motion_value_z *= -delta_time;
                         }
 
 

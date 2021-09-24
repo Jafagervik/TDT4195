@@ -252,6 +252,7 @@ fn main() {
             let vao = init_vao(&coordinates, &triangle_indices, &colors);
         }
 
+        // Setup uniform locations
         let trans_loc: i32;
         let time_loc: i32;
         let opacity_loc: i32;
@@ -261,10 +262,10 @@ fn main() {
                 .attach_file(".\\shaders\\simple.vert")
                 .attach_file(".\\shaders\\simple.frag")
                 .link();
+            // Get uniform locations
             trans_loc = shdr.get_uniform_location("transformation");
             time_loc = shdr.get_uniform_location("time");
             opacity_loc = shdr.get_uniform_location("opacity");
-
             shdr.activate();
         }
         // Used to demonstrate keyboard handling -- feel free to remove
@@ -285,7 +286,7 @@ fn main() {
             &glm::vec3(0.0, 0.0, -2.0)
         );
 
-        let mut proj: glm::Mat4 = persp_mat*persp_trans;
+        let mut proj: glm::Mat4 = persp_mat * persp_trans;
 
         let model: glm::Mat4 = glm::identity();
         let mut trans_matrix: glm::Mat4 = glm::identity(); 
@@ -302,7 +303,6 @@ fn main() {
         let mut trans_z = -4.0;
         let trans_step: f32 = 0.1;
 
-
         let mut view: glm::Mat4 = glm::identity();
 
         loop {
@@ -315,6 +315,7 @@ fn main() {
             if let Ok(keys) = pressed_keys.lock() {
                 for key in keys.iter() {
                     // I'm using WASDEQ to handle inputs
+                    // Also use arrowkeys for rotation
                     match key {
                         VirtualKeyCode::W => {
                             trans_z += trans_step;
@@ -360,7 +361,7 @@ fn main() {
                 *delta = (0.0, 0.0);
             }
 
-            opacity = (elapsed * 10.0).sin() / 2.0 + 0.5;
+            opacity = (elapsed * 10.0).sin() / 2.0 + 0.6;
             v_time = elapsed.sin();
             let trans: glm::Mat4 = glm::translation(&glm::vec3(trans_x, trans_y, trans_z));
             let rot: glm::Mat4 = glm::rotation(rot_x.to_radians(), &glm::vec3(1.0, 0.0, 0.0)) * glm::rotation(rot_y.to_radians(), &glm::vec3(0.0, 1.0, 0.0));
@@ -369,7 +370,10 @@ fn main() {
             view = rot * trans * view;
             let mut mod_view = view * model;
             let trans_mat = proj * mod_view;
+            // Transmat here becomes MVP matrix after getting built up by model,
+            // view ( rotation, translation ), and projection
 
+            // Reset values
             trans_x = 0.0;
             trans_y = 0.0;
             trans_z = 0.0;
@@ -379,7 +383,8 @@ fn main() {
             unsafe {
                 gl::ClearColor(0.76862745, 0.71372549, 0.94901961, 1.0); // moon raker, full opacity
                 gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
-
+                
+                // Now we can use these uniforms in our shaders
                 gl::Uniform1f(opacity_loc, opacity);
                 gl::Uniform1f(time_loc, v_time);
                 gl::UniformMatrix4fv(trans_loc, 1, gl::FALSE, trans_mat.as_ptr());

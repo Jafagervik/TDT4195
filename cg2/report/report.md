@@ -32,8 +32,7 @@ iii) The purpose of this is to discard/remove the primitives where vertices are 
 b) ![](images/o2b.png)
 
 i) The triangle completely disappears if I give it the index buffer [1, 0, 2], [0, 2, 1] or [2, 1, 0]
-ii) It happens due to
-iii) The effect occurs when the indices 0 2 and 1 come after each other, despite which one you start from. The rule is that "".
+ii) Depth buffer was indeed 
 
 c)
 i) The reason that the depth buffer needs to be reset each frame is to avoid comparing the new pixels with the depth values from last frame.
@@ -80,6 +79,3 @@ ii) z index Blended colors and exchanging z-coordinates
 b) a = scale, gets smaller the lesser the value | axis = x, b = shear | axis = y, c = translation, to right | axis = none, d = shear, looked like right side got turnt more up | axis = x, e = scale, height | axis = y, f = translates upwards | axis = none
 
 c) To have rotation we have to have [cos ø, sin ø]^T , [-sin ø, cos ø]^T in some way or another in the matrix. For Rot_x, e doesn't have to be 1, and sin ø and - sin ø doesn't both give 0. Rot_y: e don't have to be 1, and since sin ø have to be 1, a have to be 1, but cos90 is 1, and this can't be true. Rot_z: d and f would have to be 0.
-## Exercise 5
-b)
-d)

@@ -299,7 +299,7 @@ fn main() {
 
         let mut trans_x = 0.0;
         let mut trans_y = 0.0;
-        let mut trans_z = -3.0;
+        let mut trans_z = -4.0;
         let trans_step: f32 = 0.1;
 
 

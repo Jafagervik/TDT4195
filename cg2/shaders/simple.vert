@@ -1,14 +1,11 @@
 #version 460 core
 
-// Out: a vector4 containing the positons generateb by the vertex shader
 layout(location = 0) in vec3 position;
 layout(location = 1) in vec4 vertexColor;
 
 out vec4 fragmentColor;
-
 uniform mat4 transformation;
 uniform mat4 time;
-uniform mat4 opacity;
 
 void main()  
 {
@@ -26,9 +23,10 @@ void main()
     MVP[2] = vec4(0.0, 0.0, 1.0, 0.0);
     MVP[3] = vec4(cVal, fVal, 0.0, 1.0);
     */
-    
-    gl_Position = transformation*vec4(position, 1.0);
+
     // gl_Position = vec4(position, 1.0);
+    vec4 orig_position = vec4(position, 1.0);
+    gl_Position = transformation*orig_position;
     fragmentColor = vertexColor;
 }
 

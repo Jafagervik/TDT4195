@@ -10,13 +10,13 @@ uniform mat4 time;
 void main()  
 {
     // a scales to smaller the less the value
-    // d turns right side more up, looks like translate
-    // b moves top vertices more to the right the lesser the value
+    // d turns right side more up, looks like shear
+    // b moves top vertices more to the right the lesser the value, shear
     // e scales down, mostly height
     // c translates to right
     // f translates upwards
 
-    /*
+    /* Task 3a - used to take in 6 uniforms, now removed
     mat4 MVP;
     MVP[0] = vec4(aVal, dVal, 0.0, 0.0);
     MVP[1] = vec4(bVal, eVal, 0.0, 0.0);

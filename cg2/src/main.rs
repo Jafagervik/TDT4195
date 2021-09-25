@@ -208,31 +208,31 @@ fn main() {
         ];
 
         let overLappingCoordinates: Vec<f32> = vec![
-        -0.3, 0.0, 0.8, 
-        0.3, 0.0, 0.8, 
-        0.0, 0.6, 0.8, 
+        -0.3, 0.0, 0.7, 
+        0.3, 0.0, 0.7, 
+        0.0, 0.5, 0.7, 
         
-        -0.1, 0.3, 0.6, 
-        0.3, 0.0, 0.6, 
-        0.3, 0.6, 0.6,
+        -0.1, 0.3, 0.8, 
+        0.3, 0.0, 0.8, 
+        0.3, 0.6, 0.8,
 
-        -0.4, 0.6, 0.4, 
-        -0.4, 0.0, 0.4,
-        0.2, 0.3, 0.4
+        -0.4, 0.6, 0.6, 
+        -0.4, 0.0, 0.6,
+        0.2, 0.3, 0.6
         ];
-        let overlapping_triangle_indices: Vec<u32> = vec![6, 7, 8, 3, 4, 5, 0, 1, 2];
         let overLappingColors: Vec<f32> = vec![
-            0.0, 0.0, 1.0, 0.9, 
-            0.0, 0.0, 1.0, 0.9, 
-            0.0, 0.0, 1.0, 0.9, 
+            
+            1.0, 0.0, 0.0, 0.6, 
+            1.0, 0.0, 0.0, 0.6, 
+            1.0, 0.0, 0.0, 0.6,
             
             0.0, 1.0, 0.0, 0.8, 
             0.0, 1.0, 0.0, 0.8, 
             0.0, 1.0, 0.0, 0.8, 
             
-            1.0, 0.0, 0.0, 0.6, 
-            1.0, 0.0, 0.0, 0.6, 
-            1.0, 0.0, 0.0, 0.6
+            0.0, 0.0, 1.0, 0.9, 
+            0.0, 0.0, 1.0, 0.9, 
+            0.0, 0.0, 1.0, 0.9, 
         ];
                 
         let coordinates: Vec<f32> = vec![
@@ -249,7 +249,7 @@ fn main() {
 
         // == // Set up your VAO here
         unsafe {
-            let vao = init_vao(&coordinates, &triangle_indices, &colors);
+            let vao = init_vao(&overLappingCoordinates, &i, &overLappingColors);
         }
 
         // Setup uniform locations
@@ -369,17 +369,31 @@ fn main() {
 
             view = rot * trans * view;
             let mut mod_view = view * model;
-            let trans_mat = proj * mod_view;
             // Transmat here becomes MVP matrix after getting built up by model,
             // view ( rotation, translation ), and projection
+            let trans_mat = proj * mod_view;
 
+            //Billboard task 
+            /*
+            mod_view.m11 = 1.0;
+            mod_view.m12 = 0.0;
+            mod_view.m13 = 0.0;
+
+            mod_view.m21 = 0.0;
+            mod_view.m22 = 1.0;
+            mod_view.m23 = 0.0;
+
+            mod_view.m31 = 0.0;
+            mod_view.m32 = 0.0;
+            mod_view.m33 = 1.0;
+
+            */
             // Reset values
             trans_x = 0.0;
             trans_y = 0.0;
             trans_z = 0.0;
             rot_y = 0.0;
             rot_x = 0.0;
-            
             unsafe {
                 gl::ClearColor(0.76862745, 0.71372549, 0.94901961, 1.0); // moon raker, full opacity
                 gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
@@ -391,7 +405,7 @@ fn main() {
                 
                 // Issue the necessary commands to draw your scene here
                 // We have 15 indices for the 5 triangles, 3 for 1 and so on
-                let num_of_indices = 3 * 1;
+                let num_of_indices = 3 * 3;
                 let num_of_square_indices = 6;
                 gl::DrawElements(
                     gl::TRIANGLES,

@@ -163,6 +163,49 @@ unsafe fn init_vao(
     vao
 }
 
+unsafe fn draw_scene(node: &SceneNode, view_projection_matrix: &glm::Mat4) {
+    // TODO: Check if node is drawable, set uniforms, draw
+    // Check if node is drawable
+    // node.current_transformation_matrix = *view_projection_matrix;
+    // Set uniforms
+    // Draw
+    // Check that we have a vao attached to the node
+    if node.index_count != -1 {
+        gl::BindVertexArray(node.vao_id);
+        gl::DrawElements(
+            gl::TRIANGLES,
+            node.index_count, // Here we get the amount of indices we need
+            gl::UNSIGNED_INT,
+            ptr::null(),
+        );
+    }
+
+    for &child in &node.children {
+        draw_scene(&*child, view_projection_matrix);
+    }
+}
+
+unsafe fn update_node_transformations(node: &mut SceneNode, transformation_so_far: &glm::Mat4) {
+    // Construct the correct transformation matrix
+    // TODO: Find out what to do here?
+    let mut trans: glm::Mat4 = glm::identity();
+    trans = glm::translate(&trans, &node.position);
+    trans = glm::rotate(&trans, 90.0, &node.rotation);
+    trans = glm::scale(&trans, &node.scale);
+
+    // Update the node's transformation matrix
+    // Task 3d)
+    // TODO: Find out if this is the correct order
+    node.current_transformation_matrix = trans * transformation_so_far;
+
+    // Need to find correct location to use
+    // gl::UniformMatrix4fv(trans_loc, 1, gl::FALSE, node.current_transformation_matrix.as_ptr());
+    // Recurse
+    for &child in &node.children {
+        update_node_transformations(&mut *child, &node.current_transformation_matrix);
+    }
+}
+
 fn main() {
     // Set up the necessary objects to deal with windows and event handling
     let el = glutin::event_loop::EventLoop::new();
@@ -274,6 +317,14 @@ fn main() {
             SceneNode::from_vao(helicopter_tail_rotor_vao, helicopter_mesh[2].index_count);
         let mut helicopter_door_node =
             SceneNode::from_vao(helicopter_door_vao, helicopter_mesh[3].index_count);
+
+        // 3b) Reference points
+        // Found these by eyeballing helicopter.obj file
+        terrain_node.reference_point = glm::vec3(0.0, 0.0, 0.0);
+        helicopter_body_node.reference_point = glm::vec3(0.0, 1.5, 2.5);
+        helicopter_main_rotor_node.reference_point = glm::vec3(0.0, 1.5, 0.0);
+        helicopter_tail_rotor_node.reference_point = glm::vec3(0.35, 2.3, 10.4);
+        helicopter_door_node.reference_point = glm::vec3(1.2, 0.0, 0.0);
 
         // For now I say that every part of the helicopter is dependent of where the body us
         helicopter_body_node.add_child(&helicopter_main_rotor_node);
@@ -400,6 +451,7 @@ fn main() {
             let mut mod_view = view * model;
             // Transmat here becomes MVP matrix after getting built up by model,
             // view ( rotation, translation ), and projection
+            let view_proj_mat = proj * view;
             let trans_mat = proj * mod_view;
 
             // Reset values
@@ -416,14 +468,17 @@ fn main() {
                 gl::Uniform1f(time_loc, v_time);
                 gl::UniformMatrix4fv(trans_loc, 1, gl::FALSE, trans_mat.as_ptr());
 
-                gl::BindVertexArray(terrain_vao);
+                // Before task 3c)
+                /* gl::BindVertexArray(terrain_vao);
                 // Issue the necessary commands to draw your scene here
                 gl::DrawElements(
                     gl::TRIANGLES,
                     terrain_mesh.index_count, // Here we get the amount of indices we need
                     gl::UNSIGNED_INT,
                     ptr::null(),
-                );
+                );*/
+                // After task 3c
+                draw_scene(&root, &view_proj_mat);
             }
             context.swap_buffers().unwrap();
         }

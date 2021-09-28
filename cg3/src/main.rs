@@ -106,7 +106,14 @@ unsafe fn init_vao(vertices: &Vec<f32>, indices: &Vec<u32>, colors: &Vec<f32>) -
     );
 
     // 2nd attribute buffer is for colors
-    gl::VertexAttribPointer(1, 4, gl::FLOAT, gl::FALSE, size_of::<f32>() * 4, 0 as *const c_void);
+    gl::VertexAttribPointer(
+        1,
+        4,
+        gl::FLOAT,
+        gl::FALSE,
+        size_of::<f32>() * 4,
+        0 as *const c_void,
+    );
     gl::EnableVertexAttribArray(1);
 
     // Index buffer object = connect the dots, multiple usecases for same vertices.
@@ -180,72 +187,29 @@ fn main() {
             );
         }
         let c: Vec<f32> = vec![
-        -0.8, -0.6, 0.0, 
-        -0.5, -0.6, 0.0, 
-        -0.65, -0.2, 0.0,
-
-        0.5, -0.6, 0.0, 
-        0.8, -0.6, 0.0, 
-        0.65, -0.2, 0.0,
-
-        -0.2, 0.3, 0.0, 
-        0.2, 0.6, 0.0, 
-        0.0, 0.6, 0.0,
+            -0.8, -0.6, 0.0, -0.5, -0.6, 0.0, -0.65, -0.2, 0.0, 0.5, -0.6, 0.0, 0.8, -0.6, 0.0,
+            0.65, -0.2, 0.0, -0.2, 0.3, 0.0, 0.2, 0.6, 0.0, 0.0, 0.6, 0.0,
         ];
         let i: Vec<u32> = vec![0, 1, 2, 3, 4, 5, 6, 7, 8];
         let col: Vec<f32> = vec![
-        1.0, 0.0, 0.0, 0.9, 
-        1.0, 0.0, 0.0, 0.9, 
-        1.0, 0.0, 0.0, 0.9,
-        
-        0.0, 1.0, 0.0, 0.8, 
-        0.0, 1.0, 0.0, 0.8, 
-        0.0, 1.0, 0.0, 0.8,
-
-        0.0, 0.0, 1.0, 0.7, 
-        0.0, 0.0, 1.0, 0.7, 
-        0.0, 0.0, 1.0, 0.7,
+            1.0, 0.0, 0.0, 0.9, 1.0, 0.0, 0.0, 0.9, 1.0, 0.0, 0.0, 0.9, 0.0, 1.0, 0.0, 0.8, 0.0,
+            1.0, 0.0, 0.8, 0.0, 1.0, 0.0, 0.8, 0.0, 0.0, 1.0, 0.7, 0.0, 0.0, 1.0, 0.7, 0.0, 0.0,
+            1.0, 0.7,
         ];
 
         let overLappingCoordinates: Vec<f32> = vec![
-        -0.3, 0.0, 0.7, 
-        0.3, 0.0, 0.7, 
-        0.0, 0.5, 0.7, 
-        
-        -0.1, 0.3, 0.8, 
-        0.3, 0.0, 0.8, 
-        0.3, 0.6, 0.8,
-
-        -0.4, 0.6, 0.6, 
-        -0.4, 0.0, 0.6,
-        0.2, 0.3, 0.6
+            -0.3, 0.0, 0.7, 0.3, 0.0, 0.7, 0.0, 0.5, 0.7, -0.1, 0.3, 0.8, 0.3, 0.0, 0.8, 0.3, 0.6,
+            0.8, -0.4, 0.6, 0.6, -0.4, 0.0, 0.6, 0.2, 0.3, 0.6,
         ];
         let overLappingColors: Vec<f32> = vec![
-            
-            1.0, 0.0, 0.0, 0.6, 
-            1.0, 0.0, 0.0, 0.6, 
-            1.0, 0.0, 0.0, 0.6,
-            
-            0.0, 1.0, 0.0, 0.8, 
-            0.0, 1.0, 0.0, 0.8, 
-            0.0, 1.0, 0.0, 0.8, 
-            
-            0.0, 0.0, 1.0, 0.9, 
-            0.0, 0.0, 1.0, 0.9, 
-            0.0, 0.0, 1.0, 0.9, 
+            1.0, 0.0, 0.0, 0.6, 1.0, 0.0, 0.0, 0.6, 1.0, 0.0, 0.0, 0.6, 0.0, 1.0, 0.0, 0.8, 0.0,
+            1.0, 0.0, 0.8, 0.0, 1.0, 0.0, 0.8, 0.0, 0.0, 1.0, 0.9, 0.0, 0.0, 1.0, 0.9, 0.0, 0.0,
+            1.0, 0.9,
         ];
-                
-        let coordinates: Vec<f32> = vec![
-            -0.6, -0.6, 0.0,
-            0.6, -0.6, 0.0,
-            0.0, 0.6, 0.0
-        ];
+
+        let coordinates: Vec<f32> = vec![-0.6, -0.6, 0.0, 0.6, -0.6, 0.0, 0.0, 0.6, 0.0];
         let triangle_indices: Vec<u32> = vec![0, 1, 2];
-        let colors: Vec<f32> = vec![
-            0.0, 0.0, 1.0, 1.0, 
-            0.0, 0.0, 1.0, 1.0, 
-            0.0, 0.0, 1.0, 1.0
-        ];
+        let colors: Vec<f32> = vec![0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0];
 
         // == // Set up your VAO here
         unsafe {
@@ -275,28 +239,22 @@ fn main() {
         let mut last_frame_time = first_frame_time;
         // The main rendering loop
 
-        let persp_mat: glm::Mat4 = glm::perspective(
-            (SCREEN_H as f32) / (SCREEN_W as f32),
-            90.0,
-            1.0,
-            100.0
-        );
+        let persp_mat: glm::Mat4 =
+            glm::perspective((SCREEN_H as f32) / (SCREEN_W as f32), 90.0, 1.0, 1000.0);
 
-        let persp_trans: glm::Mat4 = glm::translation(
-            &glm::vec3(0.0, 0.0, -2.0)
-        );
+        let persp_trans: glm::Mat4 = glm::translation(&glm::vec3(0.0, 0.0, -2.0));
 
         let mut proj: glm::Mat4 = persp_mat * persp_trans;
 
         let model: glm::Mat4 = glm::identity();
-        let mut trans_matrix: glm::Mat4 = glm::identity(); 
+        let mut trans_matrix: glm::Mat4 = glm::identity();
 
         let mut rot_x = 0.0;
         let mut rot_y = 0.0;
         let rot_step: f32 = 2.0;
 
         let mut opacity: f32 = 0.0;
-        let mut v_time:f32 = 0.0;
+        let mut v_time: f32 = 0.0;
 
         let mut trans_x = 0.0;
         let mut trans_y = 0.0;
@@ -319,38 +277,38 @@ fn main() {
                     match key {
                         VirtualKeyCode::W => {
                             trans_z += trans_step;
-                        },
+                        }
                         VirtualKeyCode::A => {
                             trans_x += trans_step;
-                        },
+                        }
                         VirtualKeyCode::S => {
                             trans_z -= trans_step;
-                        },
+                        }
                         VirtualKeyCode::D => {
                             trans_x -= trans_step;
-                        },
+                        }
                         VirtualKeyCode::E => {
                             trans_y -= trans_step;
-                        },
+                        }
                         VirtualKeyCode::Q => {
                             trans_y += trans_step;
-                        },
+                        }
                         VirtualKeyCode::R => {
                             // Reset camera
                             view = glm::identity();
-                        },
+                        }
                         VirtualKeyCode::Up => {
                             rot_x -= rot_step;
-                        },
+                        }
                         VirtualKeyCode::Down => {
                             rot_x += rot_step;
-                        },
+                        }
                         VirtualKeyCode::Left => {
                             rot_y -= rot_step;
-                        },
+                        }
                         VirtualKeyCode::Right => {
                             rot_y += rot_step;
-                        },
+                        }
                         _ => {}
                     }
                 }
@@ -364,7 +322,8 @@ fn main() {
             opacity = (elapsed * 10.0).sin() / 2.0 + 0.6;
             v_time = elapsed.sin();
             let trans: glm::Mat4 = glm::translation(&glm::vec3(trans_x, trans_y, trans_z));
-            let rot: glm::Mat4 = glm::rotation(rot_x.to_radians(), &glm::vec3(1.0, 0.0, 0.0)) * glm::rotation(rot_y.to_radians(), &glm::vec3(0.0, 1.0, 0.0));
+            let rot: glm::Mat4 = glm::rotation(rot_x.to_radians(), &glm::vec3(1.0, 0.0, 0.0))
+                * glm::rotation(rot_y.to_radians(), &glm::vec3(0.0, 1.0, 0.0));
             let scale: glm::Mat4 = glm::identity();
 
             view = rot * trans * view;
@@ -373,21 +332,6 @@ fn main() {
             // view ( rotation, translation ), and projection
             let trans_mat = proj * mod_view;
 
-            //Billboard task 
-            /*
-            mod_view.m11 = 1.0;
-            mod_view.m12 = 0.0;
-            mod_view.m13 = 0.0;
-
-            mod_view.m21 = 0.0;
-            mod_view.m22 = 1.0;
-            mod_view.m23 = 0.0;
-
-            mod_view.m31 = 0.0;
-            mod_view.m32 = 0.0;
-            mod_view.m33 = 1.0;
-
-            */
             // Reset values
             trans_x = 0.0;
             trans_y = 0.0;
@@ -397,22 +341,15 @@ fn main() {
             unsafe {
                 gl::ClearColor(0.76862745, 0.71372549, 0.94901961, 1.0); // moon raker, full opacity
                 gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
-                
                 // Now we can use these uniforms in our shaders
                 gl::Uniform1f(opacity_loc, opacity);
                 gl::Uniform1f(time_loc, v_time);
                 gl::UniformMatrix4fv(trans_loc, 1, gl::FALSE, trans_mat.as_ptr());
-                
                 // Issue the necessary commands to draw your scene here
                 // We have 15 indices for the 5 triangles, 3 for 1 and so on
                 let num_of_indices = 3 * 3;
                 let num_of_square_indices = 6;
-                gl::DrawElements(
-                    gl::TRIANGLES,
-                    num_of_indices,
-                    gl::UNSIGNED_INT,
-                    ptr::null(),
-                );
+                gl::DrawElements(gl::TRIANGLES, num_of_indices, gl::UNSIGNED_INT, ptr::null());
             }
             context.swap_buffers().unwrap();
         }

@@ -319,9 +319,9 @@ fn main() {
             SceneNode::from_vao(helicopter_door_vao, helicopter_mesh[3].index_count);
 
         // 3b) Reference points
-        // Found these by eyeballing helicopter.obj file
+        // TODO: Found these by eyeballing helicopter.obj file
         terrain_node.reference_point = glm::vec3(0.0, 0.0, 0.0);
-        helicopter_body_node.reference_point = glm::vec3(0.0, 1.5, 2.5);
+        helicopter_body_node.reference_point = glm::vec3(0.35, 1.5, 10.4);
         helicopter_main_rotor_node.reference_point = glm::vec3(0.0, 1.5, 0.0);
         helicopter_tail_rotor_node.reference_point = glm::vec3(0.35, 2.3, 10.4);
         helicopter_door_node.reference_point = glm::vec3(1.2, 0.0, 0.0);

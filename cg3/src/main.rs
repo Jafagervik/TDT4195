@@ -76,7 +76,12 @@ fn read_triangles_from_file() -> Result<Vec<f32>, ()> {
 // let p = 0 as *const c_void
 
 // == // Modify and complete the function below for the first task
-unsafe fn init_vao(vertices: &Vec<f32>, indices: &Vec<u32>, colors: &Vec<f32>) -> u32 {
+unsafe fn init_vao(
+    vertices: &Vec<f32>,
+    indices: &Vec<u32>,
+    colors: &Vec<f32>,
+    normals: &Vec<f32>,
+) -> u32 {
     // Returns the ID of the newly instantiated vertex array object upon its creation
 
     // VAO - way to bind vbo with spesification
@@ -120,6 +125,28 @@ unsafe fn init_vao(vertices: &Vec<f32>, indices: &Vec<u32>, colors: &Vec<f32>) -
         0 as *const c_void,
     );
     gl::EnableVertexAttribArray(1);
+
+    // NBO - vbo for the normal buffer
+    let mut nbo: u32 = 1;
+    gl::GenBuffers(1, &mut nbo);
+    gl::BindBuffer(gl::ARRAY_BUFFER, nbo);
+    gl::BufferData(
+        gl::ARRAY_BUFFER,
+        byte_size_of_array(&normals),
+        pointer_to_array(&normals),
+        gl::STATIC_DRAW,
+    );
+
+    // 3rd attribute buffer is for normals
+    gl::VertexAttribPointer(
+        2,
+        3,
+        gl::FLOAT,
+        gl::FALSE,
+        size_of::<f32>() * 3,
+        0 as *const c_void,
+    );
+    gl::EnableVertexAttribArray(2);
 
     // Index buffer object = connect the dots, multiple usecases for same vertices.
     let mut ibo: u32 = 0;
@@ -210,6 +237,7 @@ fn main() {
                 &lunar_surface_mesh.vertices,
                 &lunar_surface_mesh.indices,
                 &lunar_surface_mesh.colors,
+                &lunar_surface_mesh.normals,
             );
         }
 

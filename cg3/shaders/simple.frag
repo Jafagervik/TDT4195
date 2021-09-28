@@ -4,9 +4,10 @@
 
 // Change color over time
 in vec4 fragmentColor;
+in vec3 fragmentNormal;
 out vec4 color;
 
 void main()
 {   
-    color = fragmentColor;
+    color = vec4(fragmentNormal, 1.0);
 }

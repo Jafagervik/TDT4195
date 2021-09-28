@@ -218,18 +218,13 @@ fn main() {
                 util::get_gl_string(gl::SHADING_LANGUAGE_VERSION)
             );
         }
-        let i: Vec<u32> = vec![0, 1, 2, 3, 4, 5, 6, 7, 8];
-
-        let overLappingCoordinates: Vec<f32> = vec![
-            -0.3, 0.0, 0.7, 0.3, 0.0, 0.7, 0.0, 0.5, 0.7, -0.1, 0.3, 0.8, 0.3, 0.0, 0.8, 0.3, 0.6,
-            0.8, -0.4, 0.6, 0.6, -0.4, 0.0, 0.6, 0.2, 0.3, 0.6,
-        ];
-        let overLappingColors: Vec<f32> = vec![
-            1.0, 0.0, 0.0, 0.6, 1.0, 0.0, 0.0, 0.6, 1.0, 0.0, 0.0, 0.6, 0.0, 1.0, 0.0, 0.8, 0.0,
-            1.0, 0.0, 0.8, 0.0, 1.0, 0.0, 0.8, 0.0, 0.0, 1.0, 0.9, 0.0, 0.0, 1.0, 0.9, 0.0, 0.0,
-            1.0, 0.9,
-        ];
         let lunar_surface_mesh = mesh::Terrain::load(".\\resources\\lunarsurface.obj");
+        let helicopter_mesh = mesh::Helicopter::load(".\\resources\\helicopter.obj");
+
+        let helicopter_body_vao: u32;
+        let helicopter_door_vao: u32;
+        let helicopter_main_rotor_vao: u32;
+        let helicopter_tail_rotor_vao: u32;
 
         // == // Set up your VAO here
         unsafe {
@@ -238,6 +233,30 @@ fn main() {
                 &lunar_surface_mesh.indices,
                 &lunar_surface_mesh.colors,
                 &lunar_surface_mesh.normals,
+            );
+            helicopter_body_vao = init_vao(
+                &helicopter_mesh[0].vertices,
+                &helicopter_mesh[0].indices,
+                &helicopter_mesh[0].colors,
+                &helicopter_mesh[0].normals,
+            );
+            helicopter_main_rotor_vao = init_vao(
+                &helicopter_mesh[1].vertices,
+                &helicopter_mesh[1].indices,
+                &helicopter_mesh[1].colors,
+                &helicopter_mesh[1].normals,
+            );
+            helicopter_tail_rotor_vao = init_vao(
+                &helicopter_mesh[2].vertices,
+                &helicopter_mesh[2].indices,
+                &helicopter_mesh[2].colors,
+                &helicopter_mesh[2].normals,
+            );
+            helicopter_door_vao = init_vao(
+                &helicopter_mesh[3].vertices,
+                &helicopter_mesh[3].indices,
+                &helicopter_mesh[3].colors,
+                &helicopter_mesh[3].normals,
             );
         }
 
@@ -370,6 +389,8 @@ fn main() {
                 gl::Uniform1f(opacity_loc, opacity);
                 gl::Uniform1f(time_loc, v_time);
                 gl::UniformMatrix4fv(trans_loc, 1, gl::FALSE, trans_mat.as_ptr());
+
+                gl::BindVertexArray(helicopter_body_vao);
                 // Issue the necessary commands to draw your scene here
                 gl::DrawElements(
                     gl::TRIANGLES,

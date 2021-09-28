@@ -5,6 +5,11 @@ use std::sync::{Arc, Mutex, RwLock};
 use std::thread;
 use std::{mem, os::raw::c_void, ptr};
 
+// New import for Exercise 3
+mod mesh;
+mod scene_graph;
+mod toolbox;
+
 mod shader;
 mod util;
 
@@ -186,16 +191,7 @@ fn main() {
                 util::get_gl_string(gl::SHADING_LANGUAGE_VERSION)
             );
         }
-        let c: Vec<f32> = vec![
-            -0.8, -0.6, 0.0, -0.5, -0.6, 0.0, -0.65, -0.2, 0.0, 0.5, -0.6, 0.0, 0.8, -0.6, 0.0,
-            0.65, -0.2, 0.0, -0.2, 0.3, 0.0, 0.2, 0.6, 0.0, 0.0, 0.6, 0.0,
-        ];
         let i: Vec<u32> = vec![0, 1, 2, 3, 4, 5, 6, 7, 8];
-        let col: Vec<f32> = vec![
-            1.0, 0.0, 0.0, 0.9, 1.0, 0.0, 0.0, 0.9, 1.0, 0.0, 0.0, 0.9, 0.0, 1.0, 0.0, 0.8, 0.0,
-            1.0, 0.0, 0.8, 0.0, 1.0, 0.0, 0.8, 0.0, 0.0, 1.0, 0.7, 0.0, 0.0, 1.0, 0.7, 0.0, 0.0,
-            1.0, 0.7,
-        ];
 
         let overLappingCoordinates: Vec<f32> = vec![
             -0.3, 0.0, 0.7, 0.3, 0.0, 0.7, 0.0, 0.5, 0.7, -0.1, 0.3, 0.8, 0.3, 0.0, 0.8, 0.3, 0.6,
@@ -206,14 +202,15 @@ fn main() {
             1.0, 0.0, 0.8, 0.0, 1.0, 0.0, 0.8, 0.0, 0.0, 1.0, 0.9, 0.0, 0.0, 1.0, 0.9, 0.0, 0.0,
             1.0, 0.9,
         ];
-
-        let coordinates: Vec<f32> = vec![-0.6, -0.6, 0.0, 0.6, -0.6, 0.0, 0.0, 0.6, 0.0];
-        let triangle_indices: Vec<u32> = vec![0, 1, 2];
-        let colors: Vec<f32> = vec![0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0];
+        let lunar_surface_mesh = mesh::Terrain::load(".\\resources\\lunarsurface.obj");
 
         // == // Set up your VAO here
         unsafe {
-            let vao = init_vao(&overLappingCoordinates, &i, &overLappingColors);
+            let vao = init_vao(
+                &lunar_surface_mesh.vertices,
+                &lunar_surface_mesh.indices,
+                &lunar_surface_mesh.colors,
+            );
         }
 
         // Setup uniform locations
@@ -346,10 +343,12 @@ fn main() {
                 gl::Uniform1f(time_loc, v_time);
                 gl::UniformMatrix4fv(trans_loc, 1, gl::FALSE, trans_mat.as_ptr());
                 // Issue the necessary commands to draw your scene here
-                // We have 15 indices for the 5 triangles, 3 for 1 and so on
-                let num_of_indices = 3 * 3;
-                let num_of_square_indices = 6;
-                gl::DrawElements(gl::TRIANGLES, num_of_indices, gl::UNSIGNED_INT, ptr::null());
+                gl::DrawElements(
+                    gl::TRIANGLES,
+                    lunar_surface_mesh.index_count, // Here we get the amount of indices we need
+                    gl::UNSIGNED_INT,
+                    ptr::null(),
+                );
             }
             context.swap_buffers().unwrap();
         }

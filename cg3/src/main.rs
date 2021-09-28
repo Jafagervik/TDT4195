@@ -21,6 +21,7 @@ use glutin::event::{
     WindowEvent,
 };
 use glutin::event_loop::ControlFlow;
+use scene_graph::SceneNode;
 
 const SCREEN_W: u32 = 800;
 const SCREEN_H: u32 = 600;
@@ -218,9 +219,11 @@ fn main() {
                 util::get_gl_string(gl::SHADING_LANGUAGE_VERSION)
             );
         }
-        let lunar_surface_mesh = mesh::Terrain::load(".\\resources\\lunarsurface.obj");
+        let terrain_mesh = mesh::Terrain::load(".\\resources\\lunarsurface.obj");
         let helicopter_mesh = mesh::Helicopter::load(".\\resources\\helicopter.obj");
 
+        // VAO IDs
+        let terrain_vao: u32;
         let helicopter_body_vao: u32;
         let helicopter_door_vao: u32;
         let helicopter_main_rotor_vao: u32;
@@ -228,11 +231,11 @@ fn main() {
 
         // == // Set up your VAO here
         unsafe {
-            let vao = init_vao(
-                &lunar_surface_mesh.vertices,
-                &lunar_surface_mesh.indices,
-                &lunar_surface_mesh.colors,
-                &lunar_surface_mesh.normals,
+            terrain_vao = init_vao(
+                &terrain_mesh.vertices,
+                &terrain_mesh.indices,
+                &terrain_mesh.colors,
+                &terrain_mesh.normals,
             );
             helicopter_body_vao = init_vao(
                 &helicopter_mesh[0].vertices,
@@ -259,6 +262,29 @@ fn main() {
                 &helicopter_mesh[3].normals,
             );
         }
+        // Set up scene graph
+        let mut root = SceneNode::new();
+        let mut helicopter_root = SceneNode::new();
+        let mut terrain_node = SceneNode::from_vao(terrain_vao, terrain_mesh.index_count);
+        let mut helicopter_body_node =
+            SceneNode::from_vao(helicopter_body_vao, helicopter_mesh[0].index_count);
+        let mut helicopter_main_rotor_node =
+            SceneNode::from_vao(helicopter_main_rotor_vao, helicopter_mesh[1].index_count);
+        let mut helicopter_tail_rotor_node =
+            SceneNode::from_vao(helicopter_tail_rotor_vao, helicopter_mesh[2].index_count);
+        let mut helicopter_door_node =
+            SceneNode::from_vao(helicopter_door_vao, helicopter_mesh[3].index_count);
+
+        // For now I say that every part of the helicopter is dependent of where the body us
+        helicopter_body_node.add_child(&helicopter_main_rotor_node);
+        helicopter_body_node.add_child(&helicopter_tail_rotor_node);
+        helicopter_body_node.add_child(&helicopter_door_node);
+        // The entire helicopter get's one parent nore TODO: Could this just be body?
+        helicopter_root.add_child(&helicopter_body_node);
+        // Since terrain only has one vao, I let it be the root, and add helicopter as a child
+        terrain_node.add_child(&helicopter_root);
+        // The scene root get's the terrain itself added as a child, since every object revolves around the terrain
+        root.add_child(&terrain_node);
 
         // Setup uniform locations
         let trans_loc: i32;
@@ -390,11 +416,11 @@ fn main() {
                 gl::Uniform1f(time_loc, v_time);
                 gl::UniformMatrix4fv(trans_loc, 1, gl::FALSE, trans_mat.as_ptr());
 
-                gl::BindVertexArray(helicopter_body_vao);
+                gl::BindVertexArray(terrain_vao);
                 // Issue the necessary commands to draw your scene here
                 gl::DrawElements(
                     gl::TRIANGLES,
-                    lunar_surface_mesh.index_count, // Here we get the amount of indices we need
+                    terrain_mesh.index_count, // Here we get the amount of indices we need
                     gl::UNSIGNED_INT,
                     ptr::null(),
                 );

@@ -174,15 +174,9 @@ unsafe fn draw_scene(
     if node.index_count != -1 {
         // TODO: find out how to set uniforms
         let trans_loc = shader.get_uniform_location("transformation");
-        let time_loc = shader.get_uniform_location("time");
-        let opacity_loc = shader.get_uniform_location("opacity");
         shader.activate();
 
         let new_trans_mat = node.current_transformation_matrix * view_projection_matrix;
-
-        gl::Uniform1f(opacity_loc, opacity);
-        gl::Uniform1f(time_loc, v_time);
-
         // 3d) TODO: change this to the new matrix we're creating
         gl::UniformMatrix4fv(trans_loc, 1, gl::FALSE, new_trans_mat.as_ptr());
 
@@ -488,10 +482,10 @@ fn main() {
             unsafe {
                 gl::ClearColor(0.76862745, 0.71372549, 0.94901961, 1.0); // moon raker, full opacity
                 gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
-                /*
                 // Now we can use these uniforms in our shaders
                 gl::Uniform1f(opacity_loc, opacity);
                 gl::Uniform1f(time_loc, v_time);
+                /*
 
                 // 3d) TODO: change this to the new matrix we're creating
                 gl::UniformMatrix4fv(trans_loc, 1, gl::FALSE, trans_mat.as_ptr());

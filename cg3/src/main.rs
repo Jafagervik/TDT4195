@@ -3,7 +3,7 @@ use std::fs::File;
 use std::io::Read;
 use std::sync::{Arc, Mutex, RwLock};
 use std::thread;
-use std::{mem, os::raw::c_void, ptr};
+use std::{f32::consts, mem, os::raw::c_void, ptr};
 
 // New import for Exercise 3
 mod mesh;
@@ -170,14 +170,11 @@ unsafe fn draw_scene(
 ) {
     // Check if node is drawable, Set uniforms, Draw
     // Check that we have a vao attached to the node
-    // TODO: Set uniforms
     if node.index_count != -1 {
-        // TODO: find out how to set uniforms
         let trans_loc = shader.get_uniform_location("transformation");
-        shader.activate();
+        // shader.activate();
 
         let new_trans_mat = node.current_transformation_matrix * view_projection_matrix;
-        // 3d) TODO: change this to the new matrix we're creating
         gl::UniformMatrix4fv(trans_loc, 1, gl::FALSE, new_trans_mat.as_ptr());
 
         gl::BindVertexArray(node.vao_id);
@@ -188,8 +185,6 @@ unsafe fn draw_scene(
             ptr::null(),
         );
     }
-    // TODO: pass to vertex shader
-    // let PASSTOUNIFORMVARTRANSLOC = node.current_transformation_matrix * view_projection_matrix;
 
     for &child in &node.children {
         draw_scene(&*child, view_projection_matrix, shader);
@@ -200,10 +195,12 @@ unsafe fn update_node_transformations(node: &mut SceneNode, transformation_so_fa
     // Construct the correct transformation matrix
     // TODO: Find out what to do here?
     let mut trans: glm::Mat4 = glm::identity();
+
+    let angle: f32 = 90.0;
     // TODO: see if we need this first line
     trans = glm::translate(&trans, &node.position);
     trans = glm::translate(&trans, &-node.reference_point);
-    trans = glm::rotate(&trans, 3.14159265358, &node.rotation);
+    trans = glm::rotate(&trans, angle.to_radians(), &node.rotation);
     trans = glm::translate(&trans, &node.reference_point);
 
     // Update the node's transformation matrix
@@ -359,18 +356,18 @@ fn main() {
         let time_loc: i32;
         let opacity_loc: i32;
         unsafe {
-            /*
             // Creates shader. using multiple attaches since they return self, and link them all together at the end
             shdr = shader::ShaderBuilder::new()
                 .attach_file(".\\shaders\\simple.vert")
                 .attach_file(".\\shaders\\simple.frag")
                 .link();
             // Get uniform locations
-            trans_loc = shdr.get_uniform_location("transformation");
             time_loc = shdr.get_uniform_location("time");
             opacity_loc = shdr.get_uniform_location("opacity");
+            trans_loc = shdr.get_uniform_location("transformation");
             shdr.activate();
-            */
+            /*
+             */
         }
         // Used to demonstrate keyboard handling -- feel free to remove
         let mut _arbitrary_number = 0.0;

@@ -173,12 +173,19 @@ unsafe fn draw_scene(
     // TODO: Set uniforms
     if node.index_count != -1 {
         // TODO: find out how to set uniforms
-        /*
-        trans_loc = shader.get_uniform_location("transformation");
-        time_loc = shader.get_uniform_location("time");
-        opacity_loc = shader.get_uniform_location("opacity");
-        shdr.activate();
-        */
+        let trans_loc = shader.get_uniform_location("transformation");
+        let time_loc = shader.get_uniform_location("time");
+        let opacity_loc = shader.get_uniform_location("opacity");
+        shader.activate();
+
+        let new_trans_mat = node.current_transformation_matrix * view_projection_matrix;
+
+        gl::Uniform1f(opacity_loc, opacity);
+        gl::Uniform1f(time_loc, v_time);
+
+        // 3d) TODO: change this to the new matrix we're creating
+        gl::UniformMatrix4fv(trans_loc, 1, gl::FALSE, new_trans_mat.as_ptr());
+
         gl::BindVertexArray(node.vao_id);
         gl::DrawElements(
             gl::TRIANGLES,
@@ -358,6 +365,7 @@ fn main() {
         let time_loc: i32;
         let opacity_loc: i32;
         unsafe {
+            /*
             // Creates shader. using multiple attaches since they return self, and link them all together at the end
             shdr = shader::ShaderBuilder::new()
                 .attach_file(".\\shaders\\simple.vert")
@@ -368,6 +376,7 @@ fn main() {
             time_loc = shdr.get_uniform_location("time");
             opacity_loc = shdr.get_uniform_location("opacity");
             shdr.activate();
+            */
         }
         // Used to demonstrate keyboard handling -- feel free to remove
         let mut _arbitrary_number = 0.0;
@@ -479,12 +488,14 @@ fn main() {
             unsafe {
                 gl::ClearColor(0.76862745, 0.71372549, 0.94901961, 1.0); // moon raker, full opacity
                 gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
+                /*
                 // Now we can use these uniforms in our shaders
                 gl::Uniform1f(opacity_loc, opacity);
                 gl::Uniform1f(time_loc, v_time);
 
                 // 3d) TODO: change this to the new matrix we're creating
                 gl::UniformMatrix4fv(trans_loc, 1, gl::FALSE, trans_mat.as_ptr());
+                */
 
                 /*
                 // Before task 3c)

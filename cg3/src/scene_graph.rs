@@ -17,40 +17,40 @@ use std::pin::Pin;
 pub type Node = ManuallyDrop<Pin<Box<SceneNode>>>;
 
 pub struct SceneNode {
-    pub position        : glm::Vec3,   // Where I am in relation to my parent
-    pub rotation        : glm::Vec3,   // How I should be rotated
-    pub scale           : glm::Vec3,   // How I should be scaled
-    pub reference_point : glm::Vec3,   // About which point I shall rotate about
+    pub position: glm::Vec3,        // Where I am in relation to my parent
+    pub rotation: glm::Vec3,        // How I should be rotated
+    pub scale: glm::Vec3,           // How I should be scaled
+    pub reference_point: glm::Vec3, // About which point I shall rotate about
 
+    // Model matrix
     pub current_transformation_matrix: glm::Mat4, // The fruits of my labor
 
-    pub vao_id      : u32,             // What I should draw
-    pub index_count : i32,             // How much of it I shall draw
+    pub vao_id: u32,      // What I should draw
+    pub index_count: i32, // How much of it I shall draw
 
     pub children: Vec<*mut SceneNode>, // Those I command
 }
 
 impl SceneNode {
-
     pub fn new() -> Node {
         ManuallyDrop::new(Pin::new(Box::new(SceneNode {
-            position        : glm::zero(),
-            rotation        : glm::zero(),
-            scale           : glm::vec3(1.0, 1.0, 1.0),
-            reference_point : glm::zero(),
+            position: glm::zero(),
+            rotation: glm::zero(),
+            scale: glm::vec3(1.0, 1.0, 1.0),
+            reference_point: glm::zero(),
             current_transformation_matrix: glm::identity(),
-            vao_id          : 0,
-            index_count     : -1,
-            children        : vec![],
+            vao_id: 0,
+            index_count: -1,
+            children: vec![],
         })))
     }
 
     pub fn from_vao(vao_id: u32, index_count: i32) -> Node {
         ManuallyDrop::new(Pin::new(Box::new(SceneNode {
-            position        : glm::zero(),
-            rotation        : glm::zero(),
-            scale           : glm::vec3(1.0, 1.0, 1.0),
-            reference_point : glm::zero(),
+            position: glm::zero(),
+            rotation: glm::zero(),
+            scale: glm::vec3(1.0, 1.0, 1.0),
+            reference_point: glm::zero(),
             current_transformation_matrix: glm::identity(),
             vao_id,
             index_count,
@@ -59,14 +59,13 @@ impl SceneNode {
     }
 
     pub fn add_child(&mut self, child: &SceneNode) {
-        self.children.push(child as *const SceneNode as *mut SceneNode)
+        self.children
+            .push(child as *const SceneNode as *mut SceneNode)
     }
 
     #[allow(dead_code)]
     pub fn get_child(&mut self, index: usize) -> &mut SceneNode {
-        unsafe {
-            &mut (*self.children[index])
-        }
+        unsafe { &mut (*self.children[index]) }
     }
 
     #[allow(dead_code)]
@@ -78,7 +77,7 @@ impl SceneNode {
     pub fn print(&self) {
         let m = self.current_transformation_matrix;
         println!(
-"SceneNode {{
+            "SceneNode {{
     VAO:       {}
     Indices:   {}
     Children:  {}
@@ -103,30 +102,36 @@ impl SceneNode {
             self.reference_point.x,
             self.reference_point.y,
             self.reference_point.z,
-            m[0], m[4], m[8],  m[12],
-            m[1], m[5], m[9],  m[13],
-            m[2], m[6], m[10], m[14],
-            m[3], m[7], m[11], m[15],
+            m[0],
+            m[4],
+            m[8],
+            m[12],
+            m[1],
+            m[5],
+            m[9],
+            m[13],
+            m[2],
+            m[6],
+            m[10],
+            m[14],
+            m[3],
+            m[7],
+            m[11],
+            m[15],
         );
     }
-
 }
-
 
 // You can also use square brackets to access the children of a SceneNode
 use std::ops::{Index, IndexMut};
 impl Index<usize> for SceneNode {
     type Output = SceneNode;
     fn index(&self, index: usize) -> &SceneNode {
-        unsafe {
-            & *(self.children[index] as *const SceneNode)
-        }
+        unsafe { &*(self.children[index] as *const SceneNode) }
     }
 }
 impl IndexMut<usize> for SceneNode {
     fn index_mut(&mut self, index: usize) -> &mut SceneNode {
-        unsafe {
-            &mut (*self.children[index])
-        }
+        unsafe { &mut (*self.children[index]) }
     }
 }

@@ -163,14 +163,21 @@ unsafe fn init_vao(
     vao
 }
 
-unsafe fn draw_scene(node: &SceneNode, view_projection_matrix: &glm::Mat4) {
-    // TODO: Check if node is drawable, set uniforms, draw
-    // Check if node is drawable
-    // node.current_transformation_matrix = *view_projection_matrix;
-    // Set uniforms
-    // Draw
+unsafe fn draw_scene(
+    node: &SceneNode,
+    view_projection_matrix: &glm::Mat4,
+    shader: &shader::Shader,
+) {
+    // Check if node is drawable, Set uniforms, Draw
     // Check that we have a vao attached to the node
+    // TODO: Set uniforms
     if node.index_count != -1 {
+        /*
+        trans_loc = shader.get_uniform_location("transformation");
+        time_loc = shader.get_uniform_location("time");
+        opacity_loc = shader.get_uniform_location("opacity");
+        shdr.activate();
+        */
         gl::BindVertexArray(node.vao_id);
         gl::DrawElements(
             gl::TRIANGLES,
@@ -181,7 +188,7 @@ unsafe fn draw_scene(node: &SceneNode, view_projection_matrix: &glm::Mat4) {
     }
 
     for &child in &node.children {
-        draw_scene(&*child, view_projection_matrix);
+        draw_scene(&*child, view_projection_matrix, shader);
     }
 }
 
@@ -263,10 +270,12 @@ fn main() {
             );
         }
         let terrain_mesh = mesh::Terrain::load(".\\resources\\lunarsurface.obj");
+        // task 2a)
         let helicopter_mesh = mesh::Helicopter::load(".\\resources\\helicopter.obj");
 
         // VAO IDs
         let terrain_vao: u32;
+        // task 2a)
         let helicopter_body_vao: u32;
         let helicopter_door_vao: u32;
         let helicopter_main_rotor_vao: u32;
@@ -305,7 +314,7 @@ fn main() {
                 &helicopter_mesh[3].normals,
             );
         }
-        // Set up scene graph
+        // Set up scene graph: task 2b)
         let mut root = SceneNode::new();
         let mut helicopter_root = SceneNode::new();
         let mut terrain_node = SceneNode::from_vao(terrain_vao, terrain_mesh.index_count);
@@ -319,7 +328,7 @@ fn main() {
             SceneNode::from_vao(helicopter_door_vao, helicopter_mesh[3].index_count);
 
         // 3b) Reference points
-        // TODO: Found these by eyeballing helicopter.obj file
+        // FIXME: Found these by eyeballing helicopter.obj file
         terrain_node.reference_point = glm::vec3(0.0, 0.0, 0.0);
         helicopter_body_node.reference_point = glm::vec3(0.35, 1.5, 10.4);
         helicopter_main_rotor_node.reference_point = glm::vec3(0.0, 1.5, 0.0);
@@ -338,12 +347,13 @@ fn main() {
         root.add_child(&terrain_node);
 
         // Setup uniform locations
+        let shdr: shader::Shader;
         let trans_loc: i32;
         let time_loc: i32;
         let opacity_loc: i32;
         unsafe {
             // Creates shader. using multiple attaches since they return self, and link them all together at the end
-            let shdr = shader::ShaderBuilder::new()
+            shdr = shader::ShaderBuilder::new()
                 .attach_file(".\\shaders\\simple.vert")
                 .attach_file(".\\shaders\\simple.frag")
                 .link();
@@ -468,8 +478,9 @@ fn main() {
                 gl::Uniform1f(time_loc, v_time);
                 gl::UniformMatrix4fv(trans_loc, 1, gl::FALSE, trans_mat.as_ptr());
 
+                /*
                 // Before task 3c)
-                /* gl::BindVertexArray(terrain_vao);
+                gl::BindVertexArray(terrain_vao);
                 // Issue the necessary commands to draw your scene here
                 gl::DrawElements(
                     gl::TRIANGLES,
@@ -477,8 +488,8 @@ fn main() {
                     gl::UNSIGNED_INT,
                     ptr::null(),
                 );*/
-                // After task 3c
-                draw_scene(&root, &view_proj_mat);
+                // After task 2c
+                draw_scene(&root, &view_proj_mat, &shdr);
             }
             context.swap_buffers().unwrap();
         }

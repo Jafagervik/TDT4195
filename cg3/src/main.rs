@@ -172,6 +172,7 @@ unsafe fn draw_scene(
     // Check that we have a vao attached to the node
     // TODO: Set uniforms
     if node.index_count != -1 {
+        // TODO: find out how to set uniforms
         /*
         trans_loc = shader.get_uniform_location("transformation");
         time_loc = shader.get_uniform_location("time");
@@ -186,6 +187,8 @@ unsafe fn draw_scene(
             ptr::null(),
         );
     }
+    // TODO: pass to vertex shader
+    // let PASSTOUNIFORMVARTRANSLOC = node.current_transformation_matrix * view_projection_matrix;
 
     for &child in &node.children {
         draw_scene(&*child, view_projection_matrix, shader);
@@ -196,13 +199,15 @@ unsafe fn update_node_transformations(node: &mut SceneNode, transformation_so_fa
     // Construct the correct transformation matrix
     // TODO: Find out what to do here?
     let mut trans: glm::Mat4 = glm::identity();
+    // TODO: see if we need this first line
     trans = glm::translate(&trans, &node.position);
-    trans = glm::rotate(&trans, 90.0, &node.rotation);
-    trans = glm::scale(&trans, &node.scale);
+    trans = glm::translate(&trans, &-node.reference_point);
+    trans = glm::rotate(&trans, 3.14159265358, &node.rotation);
+    trans = glm::translate(&trans, &node.reference_point);
 
     // Update the node's transformation matrix
     // Task 3d)
-    // TODO: Find out if this is the correct order
+    // TODO: Find out if this is the correct order, should be since trans is the new input!
     node.current_transformation_matrix = trans * transformation_so_far;
 
     // Need to find correct location to use
@@ -339,7 +344,8 @@ fn main() {
         helicopter_body_node.add_child(&helicopter_main_rotor_node);
         helicopter_body_node.add_child(&helicopter_tail_rotor_node);
         helicopter_body_node.add_child(&helicopter_door_node);
-        // The entire helicopter get's one parent nore TODO: Could this just be body?
+        // The entire helicopter get's one parent nore
+        // TODO: Could this just be body?
         helicopter_root.add_child(&helicopter_body_node);
         // Since terrain only has one vao, I let it be the root, and add helicopter as a child
         terrain_node.add_child(&helicopter_root);
@@ -476,6 +482,8 @@ fn main() {
                 // Now we can use these uniforms in our shaders
                 gl::Uniform1f(opacity_loc, opacity);
                 gl::Uniform1f(time_loc, v_time);
+
+                // 3d) TODO: change this to the new matrix we're creating
                 gl::UniformMatrix4fv(trans_loc, 1, gl::FALSE, trans_mat.as_ptr());
 
                 /*
@@ -489,6 +497,8 @@ fn main() {
                     ptr::null(),
                 );*/
                 // After task 2c
+
+                update_node_transformations(&mut root, &trans);
                 draw_scene(&root, &view_proj_mat, &shdr);
             }
             context.swap_buffers().unwrap();

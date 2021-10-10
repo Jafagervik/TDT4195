@@ -6,14 +6,20 @@ layout(location = 2) in vec3 normal;
 
 out vec4 fragmentColor;
 out vec3 fragmentNormal;
-uniform mat4 transformation;
-uniform mat4 time;
+out vec3 fragmentPosition;
+
+uniform float time;
+uniform mat4 modelMatrix;
+uniform mat4 MVP;
+
+vec4 orig_position;
 
 void main()  
 {
-    vec4 orig_position = vec4(position, 1.0);
-    gl_Position = transformation*orig_position;
+    orig_position = vec4(position, 1.0);
+    gl_Position = MVP*orig_position;
+    fragmentPosition = vec3(modelMatrix * orig_position);
     fragmentColor = vertexColor;
-    fragmentNormal = normal;
+    fragmentNormal = normalize(mat3(modelMatrix)*normal);
 }
 

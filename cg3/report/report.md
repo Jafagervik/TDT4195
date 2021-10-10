@@ -33,10 +33,6 @@ d)
 
 ## Task 5
 
-a)
-![Brightly lit side of helicopter](images/T5A1.png)
-![Dark side of helicopter, it has a rabattkode at Famme](images/T5A2.png)
-
 c)
 !["Left" side of helicopter](images/T5C1.png)
 !["Right side of helicopter](images/T5C2.png)
